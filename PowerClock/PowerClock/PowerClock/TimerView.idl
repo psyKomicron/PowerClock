@@ -1,0 +1,14 @@
+namespace PowerClock
+{
+    [default_interface]
+    runtimeclass TimerView : Microsoft.UI.Xaml.Controls.UserControl, Microsoft.UI.Xaml.Data.INotifyPropertyChanged
+    {
+        TimerView();
+        
+        Boolean ButtonsEnabled;
+        Boolean IsReadOnly;
+        Int32 Hours;
+        Int32 Minutes;
+        Int64 Seconds;
+    }
+}
