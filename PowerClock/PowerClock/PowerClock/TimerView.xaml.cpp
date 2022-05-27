@@ -241,13 +241,10 @@ namespace winrt::PowerClock::implementation
             case 1: // Sleep
                 controller.Sleep(false);
                 break;
-            case 2: // Restart
-                // not yet done.
-                break;
-            case 3: // Shutdown
+            case 2: // Shutdown
                 controller.Shutdown();
                 break;
-            case 4: // Hibenate
+            case 3: // Hibenate
                 controller.Sleep(true);
                 break;
         }
