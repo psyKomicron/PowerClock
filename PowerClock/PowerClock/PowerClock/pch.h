@@ -24,6 +24,7 @@
 #include <winrt/Microsoft.UI.Xaml.Navigation.h>
 #include <winrt/Microsoft.UI.Xaml.Shapes.h>
 #include <winrt/Microsoft.Windows.AppLifecycle.h>
+#include <winrt/Microsoft.Windows.ApplicationModel.Resources.h>
 
 #include <winrt/Windows.ApplicationModel.Activation.h>
 #include <winrt/Windows.Data.Xml.Dom.h>

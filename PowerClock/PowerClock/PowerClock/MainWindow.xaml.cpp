@@ -27,7 +27,10 @@ namespace winrt::PowerClock::implementation
 
     void MainWindow::TitleBarGrid_SizeChanged(IInspectable const&, SizeChangedEventArgs const&)
     {
-        SetDragRectangles();
+        if (customTitleBar && appWindow)
+        {
+            SetDragRectangles();
+        }
     }
 
     void MainWindow::PipButton_Click(IInspectable const&, RoutedEventArgs const&)
@@ -45,7 +48,7 @@ namespace winrt::PowerClock::implementation
     void MainWindow::InitWindow()
     {
         auto nativeWindow{ this->try_as<::IWindowNative>() };
-        winrt::check_bool(nativeWindow);
+        check_bool(nativeWindow);
         HWND handle{ nullptr };
         nativeWindow->get_WindowHandle(&handle);
         if (nativeWindow == nullptr)
@@ -60,6 +63,8 @@ namespace winrt::PowerClock::implementation
         {
             if (AppWindowTitleBar::IsCustomizationSupported())
             {
+                customTitleBar = true;
+
                 appWindow.TitleBar().ExtendsContentIntoTitleBar(true);
 
                 appWindow.TitleBar().ButtonBackgroundColor(
@@ -73,12 +78,20 @@ namespace winrt::PowerClock::implementation
                 appWindow.TitleBar().ButtonPressedBackgroundColor(Colors::Transparent());
                 appWindow.TitleBar().ButtonPressedForegroundColor(Colors::White());
             }
+            else
+            {
+                TitleBarGrid().Height(0);
+                TitleBarRow().Height(GridLength{ 0, GridUnitType::Pixel });
+
+                //ExtendsContentIntoTitleBar(true);
+            }
 
             FontIcon icon{};
             icon.FontSize(16);
             icon.Glyph(Application::Current().Resources().TryLookup(box_value(L"MiniContract2Mirrored")).as<hstring>());
             PipButton().Content(icon);
 
+#pragma region Settings
             int width = 340;
             int height = 270;
             int y = 50;
@@ -129,6 +142,8 @@ namespace winrt::PowerClock::implementation
                 rect.Width = width;
                 appWindow.MoveAndResize(rect);
             }
+#pragma endregion
+
 
             appWindow.Title(L"Multitool");
 
@@ -140,34 +155,31 @@ namespace winrt::PowerClock::implementation
     void MainWindow::SaveWindowState()
     {
         IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
-        if (appWindow != nullptr)
+        ApplicationDataCompositeValue setting = nullptr;
+        if (settings.HasKey(L"WindowSize"))
         {
-            ApplicationDataCompositeValue setting = nullptr;
-            if (settings.HasKey(L"WindowSize"))
-            {
-                setting = settings.Lookup(L"WindowSize").as<ApplicationDataCompositeValue>();
-            }
-            else
-            {
-                setting = ApplicationDataCompositeValue{};
-            }
-            setting.Insert(L"Width", box_value(appWindow.Size().Width));
-            setting.Insert(L"Height", box_value(appWindow.Size().Height));
-            settings.Insert(L"WindowSize", setting);
-
-            setting = nullptr;
-            if (settings.HasKey(L"WindowPosition"))
-            {
-                setting = settings.Lookup(L"WindowPosition").as<ApplicationDataCompositeValue>();
-            }
-            else
-            {
-                setting = ApplicationDataCompositeValue{};
-            }
-            setting.Insert(L"PositionX", box_value(appWindow.Position().X));
-            setting.Insert(L"PositionY", box_value(appWindow.Position().Y));
-            settings.Insert(L"WindowPosition", setting);
+            setting = settings.Lookup(L"WindowSize").as<ApplicationDataCompositeValue>();
         }
+        else
+        {
+            setting = ApplicationDataCompositeValue{};
+        }
+        setting.Insert(L"Width", box_value(appWindow.Size().Width));
+        setting.Insert(L"Height", box_value(appWindow.Size().Height));
+        settings.Insert(L"WindowSize", setting);
+
+        setting = nullptr;
+        if (settings.HasKey(L"WindowPosition"))
+        {
+            setting = settings.Lookup(L"WindowPosition").as<ApplicationDataCompositeValue>();
+        }
+        else
+        {
+            setting = ApplicationDataCompositeValue{};
+        }
+        setting.Insert(L"PositionX", box_value(appWindow.Position().X));
+        setting.Insert(L"PositionY", box_value(appWindow.Position().Y));
+        settings.Insert(L"WindowPosition", setting);
     }
 
     void MainWindow::SetDragRectangles()
@@ -220,30 +232,33 @@ namespace winrt::PowerClock::implementation
 
     void MainWindow::AppWindow_Changed(AppWindow const&, AppWindowChangedEventArgs const& args)
     {
-        if (args.DidSizeChange())
+        if (appWindow)
         {
-            SaveWindowState();
-        }
-
-        if (args.DidPresenterChange())
-        {
-            if (appWindow.Presenter().Kind() == AppWindowPresenterKind::CompactOverlay)
+            if (args.DidSizeChange())
             {
-                int32_t height = Application::Current().Resources().TryLookup(box_value(L"CompactModeHeight")).as<int32_t>();
-                int32_t width = Application::Current().Resources().TryLookup(box_value(L"CompactModeWidth")).as<int32_t>();
-                appWindow.Resize(SizeInt32{ width, height });
-
-                FontIcon icon{};
-                icon.FontSize(16);
-                icon.Glyph(Application::Current().Resources().TryLookup(box_value(L"MiniExpand2Mirrored")).as<hstring>());
-                PipButton().Content(icon);
+                SaveWindowState();
             }
-            else
+
+            if (args.DidPresenterChange())
             {
-                FontIcon icon{};
-                icon.FontSize(16);
-                icon.Glyph(Application::Current().Resources().TryLookup(box_value(L"MiniContract2Mirrored")).as<hstring>());
-                PipButton().Content(icon);
+                if (appWindow.Presenter().Kind() == AppWindowPresenterKind::CompactOverlay)
+                {
+                    int32_t height = Application::Current().Resources().TryLookup(box_value(L"CompactModeHeight")).as<int32_t>();
+                    int32_t width = Application::Current().Resources().TryLookup(box_value(L"CompactModeWidth")).as<int32_t>();
+                    appWindow.Resize(SizeInt32{ width, height });
+
+                    FontIcon icon{};
+                    icon.FontSize(16);
+                    icon.Glyph(Application::Current().Resources().TryLookup(box_value(L"MiniExpand2Mirrored")).as<hstring>());
+                    PipButton().Content(icon);
+                }
+                else
+                {
+                    FontIcon icon{};
+                    icon.FontSize(16);
+                    icon.Glyph(Application::Current().Resources().TryLookup(box_value(L"MiniContract2Mirrored")).as<hstring>());
+                    PipButton().Content(icon);
+                }
             }
         }
     }

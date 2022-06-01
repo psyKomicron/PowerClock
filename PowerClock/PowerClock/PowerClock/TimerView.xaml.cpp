@@ -6,7 +6,6 @@
 
 #include <chrono>
 #include <PowerController.h>
-using namespace winrt::Windows::Storage;
 
 using namespace ::PowerClock::Common;
 using namespace std::chrono_literals;
@@ -14,9 +13,11 @@ using namespace std::chrono;
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
+using namespace winrt::Microsoft::Windows::ApplicationModel::Resources;
 using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::UI::Notifications;
+using namespace winrt::Windows::Storage;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -112,10 +113,14 @@ namespace winrt::PowerClock::implementation
         ForceToggleButton().IsChecked(unbox_value_or<IReference<bool>>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ForceShutdown"), true));
         ExitToggleButton().IsChecked(unbox_value_or<IReference<bool>>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ExitWhenTimerEnds"), false));
         NotifsToggleButton().IsChecked(unbox_value_or<IReference<bool>>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true));
+        auto index = unbox_value<int32_t>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"SelectedAction"));
+        ActionComboBox().SelectedIndex(index);
+        selectionChangedToken = ActionComboBox().SelectionChanged({ this, &TimerView::ActionComboBox_SelectionChanged});
     }
 
     void TimerView::UserControl_Unloaded(IInspectable const&, RoutedEventArgs const&)
     {
+        ActionComboBox().SelectionChanged(selectionChangedToken);
     }
 
     void TimerView::TextBox_BeforeTextChanging(TextBox const&, TextBoxBeforeTextChangingEventArgs const& args)
@@ -228,11 +233,18 @@ namespace winrt::PowerClock::implementation
         }
     }
 
+    void TimerView::ActionComboBox_SelectionChanged(IInspectable const&, SelectionChangedEventArgs const&)
+    {
+        ApplicationData::Current().LocalSettings().Values().Insert(L"SelectedAction", box_value(ActionComboBox().SelectedIndex()));
+    }
+
     void TimerView::Execute()
     {
         PowerController controller{ ForceToggleButton().IsChecked().GetBoolean() };
-
+        /*bool exit = unbox_value_or<bool>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ExitWhenTimerEnds"), false);*/
+        bool exit = ExitToggleButton().IsChecked().GetBoolean();
         int index = ActionComboBox().SelectedIndex();
+
         switch (index)
         {
             case 0: // Lock
@@ -249,7 +261,7 @@ namespace winrt::PowerClock::implementation
                 break;
         }
         
-        if (unbox_value_or<bool>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ExitWhenTimerEnds"), false))
+        if (exit)
         {
             Application::Current().Exit();
         }
@@ -352,22 +364,22 @@ namespace winrt::PowerClock::implementation
         {
             hstring action;
             int index = ActionComboBox().SelectedIndex();
+
+            ResourceLoader resLoader{};
+
             switch (index)
             {
                 case 0: // Lock
-                    action = L"Lock in 30 seconds";
+                    action = resLoader.GetString(L"NotificationLock30");;
                     break;
                 case 1: // Sleep
-                    action = L"Sleep in 30 seconds";
+                    action = resLoader.GetString(L"NotificationSleep30");
                     break;
-                case 2: // Restart
-                    // not yet done. 
+                case 2: // Shutdown
+                    action = resLoader.GetString(L"NotificationShutdown30");
                     break;
-                case 3: // Shutdown
-                    action = L"Shutdown in 30 seconds";
-                    break;
-                case 4: // Hibenate
-                    action = L"Hibernation in 30 seconds";
+                case 3: // Hibenate
+                    action = resLoader.GetString(L"NotificationHibernate30");
                     break;
             }
             

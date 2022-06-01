@@ -24,11 +24,11 @@ namespace winrt::PowerClock::implementation
         int64_t Seconds() const;
         void Seconds(int64_t const& value);
 
-        winrt::event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& value)
+        inline winrt::event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& value)
         {
             return e_propertyChanged.add(value);
         };
-        void PropertyChanged(winrt::event_token const& token)
+        inline void PropertyChanged(winrt::event_token const& token)
         {
             e_propertyChanged.remove(token);
         };
@@ -50,6 +50,7 @@ namespace winrt::PowerClock::implementation
         void NotifsToggleButton_Checked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void NotifsToggleButton_Unchecked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void SettingsButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void ActionComboBox_SelectionChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e);
 
     private:
         bool _buttonsEnabled = true;
@@ -57,12 +58,15 @@ namespace winrt::PowerClock::implementation
         int32_t _hours = 0;
         int32_t _minutes = 0;
         int64_t _seconds = 0;
-        winrt::event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
         winrt::event_token tickEventToken;
+        winrt::event_token selectionChangedToken;
+
         winrt::Microsoft::UI::Dispatching::DispatcherQueueTimer dispatcherTimer = nullptr;
         winrt::Windows::Foundation::TimeSpan originalTimeSpan;
         winrt::Windows::Foundation::TimeSpan currentTimeSpan;
         bool isTimerRunning = false;
+
+        winrt::event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
 
         void Execute();
         void RestartTimer();

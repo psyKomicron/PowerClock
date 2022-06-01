@@ -148,6 +148,10 @@
                     Style="{ThemeResource AccentButtonStyle}"
                     Grid.Column="0"
                     Click="StartTimerButton_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip x:Uid="StartTimerToolTip"/>
+                    </ToolTipService.ToolTip>
+                    
                     <SymbolIcon x:Name="StartTimerButtonIcon" Symbol="Play"/>
                 </Button>
                 <Button 
@@ -157,6 +161,10 @@
                     Width="{StaticResource TimerButtonWidth}"
                     Grid.Column="1"
                     Click="RestartTimerButton_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip x:Uid="RestartTimerToolTip"/>
+                    </ToolTipService.ToolTip>
+
                     <SymbolIcon Symbol="Refresh"/>
                 </Button>
 
@@ -181,33 +189,37 @@
                 <ComboBoxItem Tag="Lock">
                     <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
                         <FontIcon Glyph="&#xE72E;" VerticalAlignment="Center" FontSize="{StaticResource FontIconSize}"/>
-                        <TextBlock Text="Lock" VerticalAlignment="Center"/>
+                        <TextBlock x:Uid="LockTextBlock" VerticalAlignment="Center"/>
                     </StackPanel>
                 </ComboBoxItem>
 
                 <ComboBoxItem Tag="Sleep">
                     <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
                         <FontIcon Glyph="&#xE708;" VerticalAlignment="Center" FontSize="{StaticResource FontIconSize}"/>
-                        <TextBlock Text="Sleep" VerticalAlignment="Center"/>
+                        <TextBlock x:Uid="SleepTextBlock" VerticalAlignment="Center"/>
                     </StackPanel>
                 </ComboBoxItem>
 
                 <ComboBoxItem Tag="Shutdown">
                     <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
                         <FontIcon Glyph="&#xE7E8;" VerticalAlignment="Center" FontSize="{StaticResource FontIconSize}"/>
-                        <TextBlock Text="Shutdown" VerticalAlignment="Center"/>
+                        <TextBlock x:Uid="ShutdownTextBlock" VerticalAlignment="Center"/>
                     </StackPanel>
                 </ComboBoxItem>
 
                 <ComboBoxItem Tag="Hibernate">
                     <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
                         <FontIcon Glyph="&#xE72E;" VerticalAlignment="Center" FontSize="{StaticResource FontIconSize}"/>
-                        <TextBlock Text="Hibernate" VerticalAlignment="Center"/>
+                        <TextBlock x:Uid="HibernateTextBlock" VerticalAlignment="Center"/>
                     </StackPanel>
                 </ComboBoxItem>
             </ComboBox>
 
             <Button x:Name="SettingsButton" Grid.Column="2" Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="12" Click="SettingsButton_Click">
+                <ToolTipService.ToolTip>
+                    <ToolTip x:Uid="SettingsToolTip"/>
+                </ToolTipService.ToolTip>
+                
                 <FontIcon Glyph="&#xe713;" FontSize="{StaticResource FontIconSize}"/>
             </Button>
 
@@ -221,18 +233,30 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>  
                 </Grid.ColumnDefinitions>
 
-                <ToggleButton x:Name="ForceToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="0" ToolTipService.ToolTip="Force shutdown" Click="ForceToggleButton_Click">
+                <ToggleButton x:Name="ForceToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="0" Click="ForceToggleButton_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip x:Uid="ForceToolTip"/>
+                    </ToolTipService.ToolTip>
+
                     <FontIcon Glyph="&#xe7e8;" FontSize="{StaticResource FontIconSize}"/>
                 </ToggleButton>
 
-                <ToggleButton x:Name="ExitToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="1" ToolTipService.ToolTip="Close app after timer ends" Click="ExitToggleButton_Click">
+                <ToggleButton x:Name="ExitToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="1" Click="ExitToggleButton_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip x:Uid="ExitAfterToolTip"/>
+                    </ToolTipService.ToolTip>
+
                     <FontIcon Glyph="&#xf78a;" FontSize="{StaticResource FontIconSize}"/>
                 </ToggleButton>
 
-                <ToggleButton x:Name="NotifsToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="2" ToolTipService.ToolTip="Allow notifications" Click="NotifsToggleButton_Click" Checked="NotifsToggleButton_Checked" Unchecked="NotifsToggleButton_Unchecked">
+                <ToggleButton x:Name="NotifsToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="2" Click="NotifsToggleButton_Click" Checked="NotifsToggleButton_Checked" Unchecked="NotifsToggleButton_Unchecked">
+                    <ToolTipService.ToolTip>
+                        <ToolTip x:Uid="NotificationsToolTip"/>
+                    </ToolTipService.ToolTip>
+
                     <Grid>
                         <FontIcon x:Name="RingerOn" Glyph="&#xea8f;" FontSize="{StaticResource FontIconSize}"/>
                         <FontIcon x:Name="RingerOff" Glyph="&#xe7ed;" FontSize="{StaticResource FontIconSize}"/>

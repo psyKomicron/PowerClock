@@ -25,6 +25,7 @@
     <ClInclude Include="PowerController.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
@@ -45,5 +46,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PowerClock.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <PRIResource Include="Resources.lang-en-us.resw">
+      <Filter>Assets</Filter>
+    </PRIResource>
+    <PRIResource Include="Resources.lang-fr-fr.resw">
+      <Filter>Assets</Filter>
+    </PRIResource>
   </ItemGroup>
 </Project>

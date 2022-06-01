@@ -9,7 +9,7 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="32"/>
+            <RowDefinition x:Name="TitleBarRow" Height="32"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
