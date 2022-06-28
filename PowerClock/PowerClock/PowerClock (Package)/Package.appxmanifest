@@ -10,7 +10,7 @@
   <Identity
     Name="9ff36d29-0a5e-462b-b8cb-456377acc01f"
     Publisher="CN=psykomicron"
-    Version="1.5.4.0" />
+    Version="2.0.8.0" />
 
   <Properties>
     <DisplayName>PowerClock (Package)</DisplayName>
@@ -33,12 +33,13 @@
       EntryPoint="$targetentrypoint$">
       <uap:VisualElements
         DisplayName="PowerClock"
-        Description="PowerClock (Package)"
+        Description="Use a timer to shutdown, hibernate, put to sleep or lock your local computer."
         BackgroundColor="transparent"
         Square150x150Logo="Images\Square150x150Logo.png"
         Square44x44Logo="Images\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png" />
+        <uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png"  Square71x71Logo="Images\SmallTile.png" Square310x310Logo="Images\LargeTile.png" />
         <uap:SplashScreen Image="Images\SplashScreen.png" />
+        <uap:LockScreen BadgeLogo="Images\BadgeLogo.png" Notification="badge"/>
       </uap:VisualElements>
     </Application>
   </Applications>
