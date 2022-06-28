@@ -15,9 +15,15 @@
             <x:Double x:Key="TimerButtonHeight">39</x:Double>
             <x:Double x:Key="TimerButtonWidth">39</x:Double>
             <x:Double x:Key="FontIconSize">16</x:Double>
+            <x:Double x:Key="BaseFontSize">60</x:Double>
 
-            <x:Int32 x:Key="CompactModeHeight">220</x:Int32>
-            <x:Int32 x:Key="CompactModeWidth">400</x:Int32>
+            <x:Double x:Key="Below200FontSize">30</x:Double>
+            <x:Double x:Key="Below300FontSize">40</x:Double>
+
+            <x:Double x:Key="Over400FontSize">70</x:Double>
+
+            <x:Int32 x:Key="CompactModeHeight">210</x:Int32>
+            <x:Int32 x:Key="CompactModeWidth">360</x:Int32>
 
             <x:String x:Key="MiniExpand2Mirrored">&#xee47;</x:String>
             <x:String x:Key="MiniContract2Mirrored">&#xee49;</x:String>
@@ -30,6 +36,13 @@
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Height" Value="34"/>
                 <Setter Property="FontWeight" Value="Normal"/>
+            </Style>
+
+            <Style x:Key="TimerTextBlockStyle" TargetType="TextBlock" BasedOn="{StaticResource DisplayTextBlockStyle}">
+                <Setter Property="FontSize" Value="{StaticResource BaseFontSize}"/>
+                <Setter Property="HorizontalAlignment" Value="Center"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Padding" Value="5,0,0,8"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>
