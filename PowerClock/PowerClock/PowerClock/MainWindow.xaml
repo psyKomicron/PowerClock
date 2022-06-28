@@ -7,13 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Grid x:Name="RootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Loaded="RootGrid_Loaded" SizeChanged="Grid_SizeChanged">
         <Grid.RowDefinitions>
             <RowDefinition x:Name="TitleBarRow" Height="32"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Grid x:Name="TitleBarGrid" Grid.Row="0" SizeChanged="TitleBarGrid_SizeChanged">
+        <Grid x:Name="TitleBarGrid" Grid.Row="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition x:Name="LeftPaddingColumn" Width="0"/>
                 <ColumnDefinition x:Name="ContentColumn" Width="Auto"/>
@@ -31,13 +31,143 @@
                     x:Name="PipButton" 
                     Grid.Column="0" 
                     Click="PipButton_Click" 
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
                     Background="Transparent" 
+                    CornerRadius="0,0,4,0"
                     BorderThickness="0"/>
             </Grid>
         </Grid>
 
         <Grid x:Name="ContentGrid" Grid.Row="1" Padding="10,0" Margin="0,5,0,0">
-            <local:TimerView VerticalAlignment="Stretch"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <local:TimerView x:Name="Timer" VerticalAlignment="Stretch" Changed="TimerView_Elapsed"/>
+
+            <Grid Grid.Row="1" Margin="0,0,0,5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition x:Name="LeftColumn" Width="*"/>
+                    <ColumnDefinition x:Name="RightColumn" Width="0"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.ChildrenTransitions>
+                    <TransitionCollection>
+                        <RepositionThemeTransition/>
+                    </TransitionCollection>
+                </Grid.ChildrenTransitions>
+
+                <ComboBox 
+                    x:Name="ActionComboBox"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Center"
+                    SelectedIndex="0"
+                    Margin="0,0,10,0"
+                    Height="{StaticResource TimerButtonHeight}"
+                    SelectionChanged="ActionComboBox_SelectionChanged"
+                    Grid.Row="1">
+                    <ComboBoxItem Tag="Lock">
+                        <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                            <FontIcon Glyph="&#xE72E;" VerticalAlignment="Center" FontSize="{StaticResource FontIconSize}"/>
+                            <TextBlock x:Uid="LockTextBlock" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ComboBoxItem>
+
+                    <ComboBoxItem Tag="Sleep">
+                        <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                            <FontIcon Glyph="&#xE708;" VerticalAlignment="Center" FontSize="{StaticResource FontIconSize}"/>
+                            <TextBlock x:Uid="SleepTextBlock" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ComboBoxItem>
+
+                    <ComboBoxItem Tag="Shutdown">
+                        <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                            <FontIcon Glyph="&#xE7E8;" VerticalAlignment="Center" FontSize="{StaticResource FontIconSize}"/>
+                            <TextBlock x:Uid="ShutdownTextBlock" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ComboBoxItem>
+
+                    <ComboBoxItem Tag="Hibernate">
+                        <StackPanel Spacing="{StaticResource StackPanelButtonSpacing}" Orientation="Horizontal">
+                            <FontIcon Glyph="&#xE72E;" VerticalAlignment="Center" FontSize="{StaticResource FontIconSize}"/>
+                            <TextBlock x:Uid="HibernateTextBlock" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ComboBoxItem>
+                </ComboBox>
+
+                <Grid 
+                    x:Name="SettingsGrid"
+                    Grid.Column="1"
+                    ColumnSpacing="10" 
+                    HorizontalAlignment="Stretch" 
+                    Background="{ThemeResource ButtonBackground}"
+                    Padding="5"
+                    CornerRadius="{ThemeResource ControlCornerRadius}">
+                    <Grid.ScaleTransition>
+                        <Vector3Transition Components="Y"/>
+                    </Grid.ScaleTransition>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ToggleButton 
+                        x:Name="NotifsToggleButton" 
+                        Style="{StaticResource AppToggleButton}" 
+                        Grid.Column="3" 
+                        Click="NotifsToggleButton_Click" 
+                        Checked="NotifsToggleButton_Checked" 
+                        Unchecked="NotifsToggleButton_Unchecked">
+                        <ToolTipService.ToolTip>
+                            <ToolTip x:Uid="NotificationsToolTip"/>
+                        </ToolTipService.ToolTip>
+
+                        <Grid>
+                            <FontIcon x:Name="RingerOn" Glyph="&#xea8f;" FontSize="{StaticResource FontIconSize}"/>
+                            <FontIcon x:Name="RingerOff" Glyph="&#xe7ed;" FontSize="{StaticResource FontIconSize}"/>
+                        </Grid>
+                    </ToggleButton>
+
+                    <ToggleButton x:Name="ForceToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="2" Click="ForceToggleButton_Click">
+                        <ToolTipService.ToolTip>
+                            <ToolTip x:Uid="ForceToolTip"/>
+                        </ToolTipService.ToolTip>
+
+                        <FontIcon Glyph="&#xe7e8;" FontSize="{StaticResource FontIconSize}"/>
+                    </ToggleButton>
+
+                    <ToggleButton x:Name="ExitToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="1" Click="ExitToggleButton_Click">
+                        <ToolTipService.ToolTip>
+                            <ToolTip x:Uid="ExitAfterToolTip"/>
+                        </ToolTipService.ToolTip>
+
+                        <FontIcon Glyph="&#xf78a;" FontSize="{StaticResource FontIconSize}"/>
+                    </ToggleButton>
+
+                    <ToggleButton x:Name="KeepOnTopToggleButton" Grid.Column="0" Style="{StaticResource AppToggleButton}" Click="KeepOnTopToggleButton_Click">
+                        <FontIcon Glyph="&#xe718;" FontSize="{StaticResource FontIconSize}"/>
+                    </ToggleButton>
+                </Grid>
+
+                <Button 
+                    x:Name="SettingsButton" 
+                    Grid.Column="2" 
+                    Grid.Row="1" 
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Padding="12" 
+                    Click="SettingsButton_Click">
+                    <ToolTipService.ToolTip>
+                        <ToolTip x:Uid="SettingsToolTip"/>
+                    </ToolTipService.ToolTip>
+
+                    <FontIcon Glyph="&#xe713;" FontSize="{StaticResource FontIconSize}"/>
+                </Button>
+            </Grid>
         </Grid>
     </Grid>
 </Window>
