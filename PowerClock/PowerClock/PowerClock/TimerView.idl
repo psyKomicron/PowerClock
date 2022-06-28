@@ -4,11 +4,21 @@ namespace PowerClock
     runtimeclass TimerView : Microsoft.UI.Xaml.Controls.UserControl, Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
         TimerView();
-        
+
+        event Windows.Foundation.TypedEventHandler<TimerView, TimerChangeStatus> Changed;
+
         Boolean ButtonsEnabled;
         Boolean IsReadOnly;
         Int32 Hours;
         Int32 Minutes;
         Int64 Seconds;
-    }
+    };
+
+    enum TimerChangeStatus
+    {
+        Started,
+        Elapsed,
+        Stopped,
+        TripPoint,
+    };
 }

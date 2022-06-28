@@ -24,13 +24,21 @@ namespace winrt::PowerClock::implementation
         int64_t Seconds() const;
         void Seconds(int64_t const& value);
 
-        inline winrt::event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& value)
+        winrt::event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& value)
         {
             return e_propertyChanged.add(value);
         };
-        inline void PropertyChanged(winrt::event_token const& token)
+        void PropertyChanged(winrt::event_token const& token)
         {
             e_propertyChanged.remove(token);
+        };
+        winrt::event_token Changed(Windows::Foundation::TypedEventHandler<winrt::PowerClock::TimerView, TimerChangeStatus> const& handler)
+        {
+            return e_elapsed.add(handler);
+        };
+        void Changed(winrt::event_token const& token)
+        {
+            e_elapsed.remove(token);
         };
 
         void HoursUpButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
@@ -42,15 +50,13 @@ namespace winrt::PowerClock::implementation
         void SecondsDownButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void StartTimerButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void RestartTimerButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void Control_Loaded(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void UserControl_Unloaded(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void NotifsToggleButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void ExitToggleButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void ForceToggleButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void NotifsToggleButton_Checked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void NotifsToggleButton_Unchecked(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void SettingsButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void ActionComboBox_SelectionChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Controls::SelectionChangedEventArgs const& e);
+        void Grid_SizeChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::SizeChangedEventArgs const& e);
+        void HoursTextBox_PointerWheelChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
+        void MinutesTextBox_PointerWheelChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
+        void SecondsTextBox_PointerWheelChanged(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e);
+        void HoursTextBox_DoubleTapped(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const& e);
+        void MinutesTextBox_DoubleTapped(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const& e);
+        void SecondsTextBox_DoubleTapped(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const& e);
 
     private:
         bool _buttonsEnabled = true;
@@ -60,22 +66,28 @@ namespace winrt::PowerClock::implementation
         int64_t _seconds = 0;
         winrt::event_token tickEventToken;
         winrt::event_token selectionChangedToken;
-
         winrt::Microsoft::UI::Dispatching::DispatcherQueueTimer dispatcherTimer = nullptr;
         winrt::Windows::Foundation::TimeSpan originalTimeSpan;
         winrt::Windows::Foundation::TimeSpan currentTimeSpan;
         bool isTimerRunning = false;
 
         winrt::event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
+        winrt::event<Windows::Foundation::TypedEventHandler<winrt::PowerClock::TimerView, TimerChangeStatus>> e_elapsed;
 
-        void Execute();
         void RestartTimer();
         void StartTimer();
         void StopTimer();
         void UpdateView(winrt::Windows::Foundation::TimeSpan timeSpan);
-        void NotifyUser(winrt::hstring message);
 
-        void DispatcherQueueTime_Tick(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&);        
+        void DispatcherQueueTime_Tick(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&);
+    };
+
+    enum TimerChangeStatus
+    {
+        Started,
+        Elapsed,
+        Stopped,
+        TripPoint
     };
 }
 

@@ -5,19 +5,19 @@
 #endif
 
 #include <chrono>
-#include <PowerController.h>
 
-using namespace ::PowerClock::Common;
 using namespace std::chrono_literals;
-using namespace std::chrono;
+
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
 using namespace winrt::Microsoft::Windows::ApplicationModel::Resources;
+
 using namespace winrt::Windows::Data::Xml::Dom;
 using namespace winrt::Windows::Foundation;
 using namespace winrt::Windows::UI::Notifications;
 using namespace winrt::Windows::Storage;
+using namespace winrt::Windows::UI::Input;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -28,7 +28,7 @@ namespace winrt::PowerClock::implementation
     {
         InitializeComponent();
         dispatcherTimer = DispatcherQueue().CreateTimer();
-        dispatcherTimer.Interval(duration(1s));
+        dispatcherTimer.Interval(std::chrono::duration(1s));
         tickEventToken = dispatcherTimer.Tick({ this, &TimerView::DispatcherQueueTime_Tick });
     }
 
@@ -84,10 +84,12 @@ namespace winrt::PowerClock::implementation
     {
         if (value < 0)
         {
-            return;
+            _minutes = 59;
         }
-
-        _minutes = value;
+        else
+        {
+            _minutes = value % 60;
+        }
         e_propertyChanged(*this, PropertyChangedEventArgs{ L"Minutes" });
     }
 
@@ -100,28 +102,15 @@ namespace winrt::PowerClock::implementation
     {
         if (value < 0)
         {
-            return;
+            _seconds = 59;
         }
-
-        _seconds = value;
+        else
+        {
+            _seconds = value % 60;
+        }
         e_propertyChanged(*this, PropertyChangedEventArgs{ L"Seconds" });
     }
 
-
-    void TimerView::Control_Loaded(IInspectable const&, RoutedEventArgs const&)
-    {
-        ForceToggleButton().IsChecked(unbox_value_or<IReference<bool>>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ForceShutdown"), true));
-        ExitToggleButton().IsChecked(unbox_value_or<IReference<bool>>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ExitWhenTimerEnds"), false));
-        NotifsToggleButton().IsChecked(unbox_value_or<IReference<bool>>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true));
-        auto index = unbox_value<int32_t>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"SelectedAction"));
-        ActionComboBox().SelectedIndex(index);
-        selectionChangedToken = ActionComboBox().SelectionChanged({ this, &TimerView::ActionComboBox_SelectionChanged});
-    }
-
-    void TimerView::UserControl_Unloaded(IInspectable const&, RoutedEventArgs const&)
-    {
-        ActionComboBox().SelectionChanged(selectionChangedToken);
-    }
 
     void TimerView::TextBox_BeforeTextChanging(TextBox const&, TextBoxBeforeTextChangingEventArgs const& args)
     {
@@ -175,97 +164,82 @@ namespace winrt::PowerClock::implementation
         RestartTimer();
     }
 
-    void TimerView::NotifsToggleButton_Click(IInspectable const&, RoutedEventArgs const&)
+    void TimerView::Grid_SizeChanged(IInspectable const&, SizeChangedEventArgs const&)
     {
-        ApplicationData::Current().LocalSettings().Values().Insert(L"NotificationsEnabled", NotifsToggleButton().IsChecked());
-    }
+        double actualWidth = ActualWidth();
+        double actualHeight = ActualHeight();
+        double width = actualWidth <= 800 ? ActualWidth() : 800;
+        double height = actualHeight <= 500 ? ActualHeight() : 500;
+        FontSize((height + width) * 0.13);
 
-    void TimerView::ExitToggleButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        ApplicationData::Current().LocalSettings().Values().Insert(L"ExitWhenTimerEnds", ExitToggleButton().IsChecked());
-    }
-
-    void TimerView::ForceToggleButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        ApplicationData::Current().LocalSettings().Values().Insert(L"ForceShutdown", ForceToggleButton().IsChecked());
-    }
-
-    void TimerView::NotifsToggleButton_Checked(IInspectable const&, RoutedEventArgs const&)
-    {
-        RingerOff().Visibility(Visibility::Collapsed);
-        RingerOn().Visibility(Visibility::Visible);
-    }
-
-    void TimerView::NotifsToggleButton_Unchecked(IInspectable const&, RoutedEventArgs const&)
-    {
-        RingerOff().Visibility(Visibility::Visible);
-        RingerOn().Visibility(Visibility::Collapsed);
-    }
-
-    void TimerView::SettingsButton_Click(IInspectable const&, RoutedEventArgs const&)
-    {
-        GridLength width{};
-        if (LeftColumn().ActualWidth() == 0)
+        if (actualHeight < 75)
         {
-            width.GridUnitType = GridUnitType::Star;
-            width.Value = 1;
-            LeftColumn().Width(width);
+            FirstRow().Height(GridLength{ 0, GridUnitType::Pixel });
+            LastRow().Height(GridLength{ 0, GridUnitType::Pixel });
+            RestartTimerButton().Visibility(Visibility::Collapsed);
         }
         else
         {
-            width.GridUnitType = GridUnitType::Pixel;
-            width.Value = 0;
-            LeftColumn().Width(width);
-        }
-
-        width = GridLength{};
-        if (RightColumn().ActualWidth() == 0)
-        {
-            width.GridUnitType = GridUnitType::Star;
-            width.Value = 1;
-            RightColumn().Width(width);
-        }
-        else
-        {
-            width.GridUnitType = GridUnitType::Pixel;
-            width.Value = 0;
-            RightColumn().Width(width);
+            FirstRow().Height(GridLength{ 0, GridUnitType::Auto });
+            LastRow().Height(GridLength{ 0, GridUnitType::Auto });
+            RestartTimerButton().Visibility(Visibility::Visible);
         }
     }
 
-    void TimerView::ActionComboBox_SelectionChanged(IInspectable const&, SelectionChangedEventArgs const&)
+    void TimerView::HoursTextBox_PointerWheelChanged(IInspectable const&, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e)
     {
-        ApplicationData::Current().LocalSettings().Values().Insert(L"SelectedAction", box_value(ActionComboBox().SelectedIndex()));
+        int32_t wheelData = e.GetCurrentPoint(nullptr).Properties().MouseWheelDelta();
+        if (wheelData > 0) // scroll up
+        {
+            Hours(Hours() + 1);
+        }
+        else // scroll down
+        {
+            Hours(Hours() - 1);
+        }
     }
 
-    void TimerView::Execute()
+    void TimerView::MinutesTextBox_PointerWheelChanged(IInspectable const&, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e)
     {
-        PowerController controller{ ForceToggleButton().IsChecked().GetBoolean() };
-        /*bool exit = unbox_value_or<bool>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ExitWhenTimerEnds"), false);*/
-        bool exit = ExitToggleButton().IsChecked().GetBoolean();
-        int index = ActionComboBox().SelectedIndex();
-
-        switch (index)
+        int32_t wheelData = e.GetCurrentPoint(nullptr).Properties().MouseWheelDelta();
+        if (wheelData > 0) // scroll up
         {
-            case 0: // Lock
-                controller.Lock();
-                break;
-            case 1: // Sleep
-                controller.Sleep(false);
-                break;
-            case 2: // Shutdown
-                controller.Shutdown();
-                break;
-            case 3: // Hibenate
-                controller.Sleep(true);
-                break;
+            Minutes(Minutes() + 1);
         }
-        
-        if (exit)
+        else // scroll down
         {
-            Application::Current().Exit();
+            Minutes(Minutes() - 1);
         }
     }
+
+    void TimerView::SecondsTextBox_PointerWheelChanged(IInspectable const&, winrt::Microsoft::UI::Xaml::Input::PointerRoutedEventArgs const& e)
+    {
+        int32_t wheelData = e.GetCurrentPoint(nullptr).Properties().MouseWheelDelta();
+        if (wheelData > 0) // scroll up
+        {
+            Seconds(Seconds() + 1);
+        }
+        else // scroll down
+        {
+            Seconds(Seconds() - 1);
+        }
+    }
+
+    void TimerView::HoursTextBox_DoubleTapped(IInspectable const&, winrt::Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const& e)
+    {
+        Hours(0);
+    }
+
+    void TimerView::MinutesTextBox_DoubleTapped(IInspectable const&, winrt::Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const& e)
+    {
+        Minutes(0);
+    }
+
+    void TimerView::SecondsTextBox_DoubleTapped(IInspectable const&, winrt::Microsoft::UI::Xaml::Input::DoubleTappedRoutedEventArgs const& e)
+    {
+        Seconds(0);
+    }
+
 
     void TimerView::RestartTimer()
     {
@@ -286,13 +260,14 @@ namespace winrt::PowerClock::implementation
 
     void TimerView::StartTimer()
     {
-        originalTimeSpan = hours(Hours());
-        originalTimeSpan += minutes(Minutes());
-        originalTimeSpan += seconds(Seconds());
+        originalTimeSpan = std::chrono::hours(Hours());
+        originalTimeSpan += std::chrono::minutes(Minutes());
+        originalTimeSpan += std::chrono::seconds(Seconds());
         currentTimeSpan = TimeSpan{ originalTimeSpan };
 
         dispatcherTimer.Start();
         isTimerRunning = true;
+        e_elapsed(*this, winrt::PowerClock::TimerChangeStatus::Started);
 
         StartTimerButtonIcon().Symbol(Symbol::Pause);
         ButtonsEnabled(false);
@@ -311,80 +286,48 @@ namespace winrt::PowerClock::implementation
 
     void TimerView::UpdateView(winrt::Windows::Foundation::TimeSpan timeSpan)
     {
-        hours hours = duration_cast<std::chrono::hours>(timeSpan);
+        std::chrono::hours hours = duration_cast<std::chrono::hours>(timeSpan);
         timeSpan -= hours;
-        minutes minutes = duration_cast<std::chrono::minutes>(timeSpan);
+        std::chrono::minutes minutes = duration_cast<std::chrono::minutes>(timeSpan);
         timeSpan -= minutes;
-        seconds seconds = duration_cast<std::chrono::seconds>(timeSpan);
+        std::chrono::seconds seconds = duration_cast<std::chrono::seconds>(timeSpan);
 
-        // Update text boxes
-        Hours(hours.count());
-        Minutes(minutes.count());
-        Seconds(seconds.count());
-    }
-
-    void TimerView::NotifyUser(hstring message)
-    {
-        if (unbox_value_or<bool>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true))
+        // Update text boxes & skip the checks
+        int64_t hoursCount = hours.count();
+        int64_t minutesCount = minutes.count();
+        int64_t secondsCount = seconds.count();
+        if (_hours != hoursCount)
         {
-            XmlDocument toastContent{};
-            XmlElement root = toastContent.CreateElement(L"toast");
-            toastContent.AppendChild(root);
-
-            XmlElement visual = toastContent.CreateElement(L"visual");
-            root.AppendChild(visual);
-
-            XmlElement binding = toastContent.CreateElement(L"binding");
-            binding.SetAttribute(L"template", L"ToastText01");
-            visual.AppendChild(binding);
-
-            XmlElement text = toastContent.CreateElement(L"text");
-            text.SetAttribute(L"id", L"1");
-            text.InnerText(message);
-            binding.AppendChild(text);
-
-            ToastNotification toastNotif{ toastContent };
-            ToastNotificationManager::CreateToastNotifier().Show(toastNotif);
+            _hours = hoursCount;
+            e_propertyChanged(*this, PropertyChangedEventArgs{ L"Hours" });
+        }
+        if (_minutes != minutesCount)
+        {
+            _minutes = minutesCount;
+            e_propertyChanged(*this, PropertyChangedEventArgs{ L"Minutes" });
+        }
+        if (_seconds != secondsCount)
+        {
+            _seconds = secondsCount;
+            e_propertyChanged(*this, PropertyChangedEventArgs{ L"Seconds" });
         }
     }
 
     void TimerView::DispatcherQueueTime_Tick(winrt::Windows::Foundation::IInspectable const&, winrt::Windows::Foundation::IInspectable const&)
     {
-        currentTimeSpan -= seconds(1);
+        currentTimeSpan -= std::chrono::seconds(1);
         UpdateView(currentTimeSpan);
 
-        if ((currentTimeSpan / seconds(1)) == 0)
+        if ((currentTimeSpan / std::chrono::seconds(1)) == 0)
         {
             StopTimer();
             currentTimeSpan = TimeSpan{ originalTimeSpan };
             UpdateView(currentTimeSpan);
-            Execute();
+            e_elapsed(*this, winrt::PowerClock::TimerChangeStatus::Elapsed);
         }
-        else if (currentTimeSpan == seconds(30))
+        else if (currentTimeSpan == std::chrono::seconds(30))
         {
-            hstring action;
-            int index = ActionComboBox().SelectedIndex();
-
-            ResourceLoader resLoader{};
-
-            switch (index)
-            {
-                case 0: // Lock
-                    action = resLoader.GetString(L"NotificationLock30");;
-                    break;
-                case 1: // Sleep
-                    action = resLoader.GetString(L"NotificationSleep30");
-                    break;
-                case 2: // Shutdown
-                    action = resLoader.GetString(L"NotificationShutdown30");
-                    break;
-                case 3: // Hibenate
-                    action = resLoader.GetString(L"NotificationHibernate30");
-                    break;
-            }
-            
-            // notify user (with tile) if notifications enabled
-            NotifyUser(action);
+            e_elapsed(*this, winrt::PowerClock::TimerChangeStatus::TripPoint);
         }
     }
 }
