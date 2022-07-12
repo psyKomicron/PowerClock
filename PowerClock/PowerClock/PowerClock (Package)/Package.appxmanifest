@@ -10,7 +10,7 @@
   <Identity
     Name="9ff36d29-0a5e-462b-b8cb-456377acc01f"
     Publisher="CN=psykomicron"
-    Version="2.0.8.0" />
+    Version="3.0.0.0" />
 
   <Properties>
     <DisplayName>PowerClock (Package)</DisplayName>
@@ -46,7 +46,5 @@
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
-    <iot:Capability Name="lowLevelDevices"/>
-    <DeviceCapability Name="lowLevel"/>
   </Capabilities>
 </Package>

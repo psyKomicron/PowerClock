@@ -8,6 +8,7 @@
     <Page Include="TimerView.xaml">
       <Filter>Controls</Filter>
     </Page>
+    <Page Include="ColorsWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="App.idl" />
