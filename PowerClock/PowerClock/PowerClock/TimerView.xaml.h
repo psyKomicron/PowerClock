@@ -13,17 +13,6 @@ namespace winrt::PowerClock::implementation
         TimerView();
         ~TimerView();
 
-        bool ButtonsEnabled() const;
-        void ButtonsEnabled(bool const& value);
-        bool IsReadOnly() const;
-        void IsReadOnly(bool const& value);
-        int32_t Hours() const;
-        void Hours(int32_t const& value);
-        int32_t Minutes() const;
-        void Minutes(int32_t const& value);
-        int64_t Seconds() const;
-        void Seconds(int64_t const& value);
-
         winrt::event_token PropertyChanged(Microsoft::UI::Xaml::Data::PropertyChangedEventHandler const& value)
         {
             return e_propertyChanged.add(value);
@@ -40,6 +29,19 @@ namespace winrt::PowerClock::implementation
         {
             e_elapsed.remove(token);
         };
+
+        bool ButtonsEnabled() const;
+        void ButtonsEnabled(bool const& value);
+        bool IsReadOnly() const;
+        void IsReadOnly(bool const& value);
+        int32_t Hours() const;
+        void Hours(int32_t const& value);
+        int32_t Minutes() const;
+        void Minutes(int32_t const& value);
+        int64_t Seconds() const;
+        void Seconds(int64_t const& value);
+        winrt::Microsoft::UI::Xaml::Media::Brush CountdownForeground();
+        void CountdownForeground(winrt::Microsoft::UI::Xaml::Media::Brush const& value);
 
         void HoursUpButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void TextBox_BeforeTextChanging(winrt::Microsoft::UI::Xaml::Controls::TextBox const& sender, winrt::Microsoft::UI::Xaml::Controls::TextBoxBeforeTextChangingEventArgs const& args);
@@ -70,6 +72,7 @@ namespace winrt::PowerClock::implementation
         winrt::Windows::Foundation::TimeSpan originalTimeSpan;
         winrt::Windows::Foundation::TimeSpan currentTimeSpan;
         bool isTimerRunning = false;
+        winrt::Microsoft::UI::Xaml::Media::Brush _countdownForeground = nullptr;
 
         winrt::event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
         winrt::event<Windows::Foundation::TypedEventHandler<winrt::PowerClock::TimerView, TimerChangeStatus>> e_elapsed;

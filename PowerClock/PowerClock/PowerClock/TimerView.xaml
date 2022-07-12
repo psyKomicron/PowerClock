@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid RowSpacing="0" x:DefaultBindMode="OneWay" SizeChanged="Grid_SizeChanged">
+    <Grid RowSpacing="0" x:DefaultBindMode="OneWay" SizeChanged="Grid_SizeChanged" VerticalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
@@ -33,6 +33,11 @@
             <x:String x:Key="UpButtonsFontIcon">&#xE70E;</x:String>
             <x:String x:Key="DownButtonsFontIcon">&#xE70D;</x:String>
         </Grid.Resources>
+        <Grid.ChildrenTransitions>
+            <TransitionCollection x:Name="RootGridTransitions">
+                <ReorderThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
 
         <RepeatButton 
             x:Name="HoursUpButton"
@@ -66,15 +71,17 @@
         <TextBlock 
             x:Name="HoursTextBox"
             Style="{StaticResource TimerTextBlockStyle}"
+            Foreground="{x:Bind CountdownForeground}"
             FontSize="{x:Bind FontSize}"
+            Text="{x:Bind Hours}"
             Grid.Column="0"
             Grid.Row="1"
-            Text="{x:Bind Hours}"
             PointerWheelChanged="HoursTextBox_PointerWheelChanged"
             DoubleTapped="HoursTextBox_DoubleTapped"/>
         <TextBlock 
             x:Name="MinutesTextBox"
             Style="{StaticResource TimerTextBlockStyle}" 
+            Foreground="{x:Bind CountdownForeground}"
             FontSize="{x:Bind FontSize}"
             Text="{x:Bind Minutes}"
             Grid.Column="1"
@@ -84,10 +91,11 @@
         <TextBlock 
             x:Name="SecondsTextBox"
             Style="{StaticResource TimerTextBlockStyle}" 
+            Foreground="{x:Bind CountdownForeground}"
             FontSize="{x:Bind FontSize}"
+            Text="{x:Bind Seconds}"
             Grid.Column="2"
             Grid.Row="1"
-            Text="{x:Bind Seconds}"
             PointerWheelChanged="SecondsTextBox_PointerWheelChanged"
             DoubleTapped="SecondsTextBox_DoubleTapped"/>
 
@@ -123,6 +131,7 @@
 
 
         <StackPanel 
+            x:Name="ControlButtonsPanel"
             Grid.Column="4"
             Grid.Row="0"
             Grid.RowSpan="3"
@@ -135,6 +144,7 @@
                 x:Name="StartTimerButton"
                 Padding="2"
                 Height="{StaticResource TimerButtonHeight}"
+                MaxHeight="{StaticResource TimerButtonHeight}"
                 Width="{StaticResource TimerButtonWidth}"
                 Style="{ThemeResource AccentButtonStyle}"
                 Grid.Column="0"
@@ -149,7 +159,9 @@
                 x:Name="RestartTimerButton"
                 Padding="2"
                 Height="{StaticResource TimerButtonHeight}"
+                MaxHeight="{StaticResource TimerButtonHeight}"
                 Width="{StaticResource TimerButtonWidth}"
+                MaxWidth="{StaticResource TimerButtonWidth}"
                 Grid.Column="1"
                 Click="RestartTimerButton_Click">
                 <ToolTipService.ToolTip>

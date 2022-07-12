@@ -11,6 +11,7 @@ using namespace std::chrono_literals;
 using namespace winrt;
 using namespace winrt::Microsoft::UI::Xaml;
 using namespace winrt::Microsoft::UI::Xaml::Controls;
+using namespace winrt::Microsoft::UI::Xaml::Media::Animation;
 using namespace winrt::Microsoft::Windows::ApplicationModel::Resources;
 
 using namespace winrt::Windows::Data::Xml::Dom;
@@ -37,6 +38,7 @@ namespace winrt::PowerClock::implementation
         dispatcherTimer.Tick(tickEventToken);
     }
 
+    #pragma region Properties
     bool TimerView::ButtonsEnabled() const
     {
         return _buttonsEnabled;
@@ -111,6 +113,18 @@ namespace winrt::PowerClock::implementation
         e_propertyChanged(*this, PropertyChangedEventArgs{ L"Seconds" });
     }
 
+    winrt::Microsoft::UI::Xaml::Media::Brush TimerView::CountdownForeground()
+    {
+        return _countdownForeground;
+    }
+
+    void TimerView::CountdownForeground(winrt::Microsoft::UI::Xaml::Media::Brush const& value)
+    {
+        _countdownForeground = value;
+        e_propertyChanged(*this, PropertyChangedEventArgs(L"CountdownForeground"));
+    }
+#pragma endregion
+
 
     void TimerView::TextBox_BeforeTextChanging(TextBox const&, TextBoxBeforeTextChangingEventArgs const& args)
     {
@@ -168,9 +182,11 @@ namespace winrt::PowerClock::implementation
     {
         double actualWidth = ActualWidth();
         double actualHeight = ActualHeight();
-        double width = actualWidth <= 800 ? ActualWidth() : 800;
-        double height = actualHeight <= 500 ? ActualHeight() : 500;
-        FontSize((height + width) * 0.13);
+        constexpr double maxWidth = 1000.0;
+        constexpr double maxHeight = 600.0;
+        double width = actualWidth <= maxWidth ? ActualWidth() : maxWidth;
+        double height = actualHeight <= maxHeight ? ActualHeight() : maxHeight;
+        FontSize((height + width) * 0.147);
 
         if (actualHeight < 75)
         {
@@ -269,6 +285,11 @@ namespace winrt::PowerClock::implementation
         isTimerRunning = true;
         e_elapsed(*this, winrt::PowerClock::TimerChangeStatus::Started);
 
+        Grid::SetRow(ControlButtonsPanel(), 2);
+        Grid::SetColumnSpan(ControlButtonsPanel(), 3);
+        Grid::SetColumn(ControlButtonsPanel(), 0);
+        ControlButtonsPanel().Orientation(Orientation::Horizontal);
+
         StartTimerButtonIcon().Symbol(Symbol::Pause);
         ButtonsEnabled(false);
         IsReadOnly(true);
@@ -279,9 +300,16 @@ namespace winrt::PowerClock::implementation
         dispatcherTimer.Stop();
         isTimerRunning = false;
 
+        e_elapsed(*this, PowerClock::TimerChangeStatus::Stopped);
+
         ButtonsEnabled(true);
         IsReadOnly(false);
         StartTimerButtonIcon().Symbol(Symbol::Play);
+
+        Grid::SetRow(ControlButtonsPanel(), 0);
+        Grid::SetRowSpan(ControlButtonsPanel(), 3);
+        Grid::SetColumn(ControlButtonsPanel(), 4);
+        ControlButtonsPanel().Orientation(Orientation::Vertical);
     }
 
     void TimerView::UpdateView(winrt::Windows::Foundation::TimeSpan timeSpan)
