@@ -12,6 +12,7 @@ namespace PowerClock
         Int32 Hours;
         Int32 Minutes;
         Int64 Seconds;
+        Microsoft.UI.Xaml.Media.Brush CountdownForeground;
     };
 
     enum TimerChangeStatus
