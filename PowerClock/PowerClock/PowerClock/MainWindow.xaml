@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid x:Name="RootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" Loaded="RootGrid_Loaded" SizeChanged="Grid_SizeChanged">
+    <Grid x:Name="RootGrid" Loaded="RootGrid_Loaded" SizeChanged="Grid_SizeChanged">
         <Grid.RowDefinitions>
             <RowDefinition x:Name="TitleBarRow" Height="32"/>
             <RowDefinition/>
@@ -39,15 +39,19 @@
             </Grid>
         </Grid>
 
-        <Grid x:Name="ContentGrid" Grid.Row="1" Padding="10,0" Margin="0,5,0,0">
+        <Grid x:Name="ContentGrid" Grid.Row="1" Padding="10,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition x:Name="SecondRow" Height="Auto"/>
             </Grid.RowDefinitions>
-            
-            <local:TimerView x:Name="Timer" VerticalAlignment="Stretch" Changed="TimerView_Elapsed"/>
 
-            <Grid Grid.Row="1" Margin="0,0,0,5">
+            <local:TimerView
+                x:Name="Timer" 
+                VerticalAlignment="Stretch" 
+                Changed="TimerView_Elapsed" 
+                CountdownForeground="{StaticResource ApplicationForegroundThemeBrush}"/>
+
+            <Grid x:Name="BottomGrid" Grid.Row="1" Margin="0,0,0,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition x:Name="LeftColumn" Width="*"/>
                     <ColumnDefinition x:Name="RightColumn" Width="0"/>
@@ -55,12 +59,13 @@
                 </Grid.ColumnDefinitions>
                 <Grid.ChildrenTransitions>
                     <TransitionCollection>
-                        <RepositionThemeTransition/>
+                        <ReorderThemeTransition/>
                     </TransitionCollection>
                 </Grid.ChildrenTransitions>
 
                 <ComboBox 
                     x:Name="ActionComboBox"
+                    Style="{StaticResource DefaultComboBoxStyle}"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Center"
                     SelectedIndex="0"
@@ -115,37 +120,64 @@
                         <ColumnDefinition Width="1*"/>
                     </Grid.ColumnDefinitions>
 
+                    <Button
+                        Grid.Column="3" 
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+
+                        <FontIcon Glyph="&#xe771;" FontSize="{StaticResource FontIconSize}"/>
+
+                        <Button.Flyout>
+                            <Flyout Placement="Top">
+                                <StackPanel Orientation="Horizontal" Spacing="10" Margin="-5,-5,-5,-7">
+
+                                    <ToggleButton
+                                        x:Name="UseAcrylicToggleButton"
+                                        IsChecked="True"
+                                        Style="{StaticResource AppToggleButton}"
+                                        Width="50"
+                                        Click="UseAcrylicToggleButton_Click">
+                                        <FontIcon Glyph="&#xf5ef;" FontSize="{StaticResource FontIconSize}"/>
+                                    </ToggleButton>
+
+                                    <ToggleButton
+                                        x:Name="UseDarkFontToggleButton" 
+                                        IsChecked="False"
+                                        Style="{StaticResource AppToggleButton}" 
+                                        Width="50"
+                                        Click="UseDarkFontToggleButton_Click">
+                                        <FontIcon Glyph="&#xf08c;" FontSize="{StaticResource FontIconSize}"/>
+                                    </ToggleButton>
+
+                                    <Button x:Name="MoreSettingsButton" Click="MoreSettingsButton_Click" Width="50">
+                                        <FontIcon Glyph="&#xe78b;" FontSize="{StaticResource FontIconSize}"/>
+                                    </Button>
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+                    </Button>
+
                     <ToggleButton 
                         x:Name="NotifsToggleButton" 
                         Style="{StaticResource AppToggleButton}" 
-                        Grid.Column="3" 
+                        Grid.Column="2" 
                         Click="NotifsToggleButton_Click" 
                         Checked="NotifsToggleButton_Checked" 
                         Unchecked="NotifsToggleButton_Unchecked">
                         <ToolTipService.ToolTip>
                             <ToolTip x:Uid="NotificationsToolTip"/>
                         </ToolTipService.ToolTip>
-
                         <Grid>
                             <FontIcon x:Name="RingerOn" Glyph="&#xea8f;" FontSize="{StaticResource FontIconSize}"/>
                             <FontIcon x:Name="RingerOff" Glyph="&#xe7ed;" FontSize="{StaticResource FontIconSize}"/>
                         </Grid>
                     </ToggleButton>
 
-                    <ToggleButton x:Name="ForceToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="2" Click="ForceToggleButton_Click">
+                    <ToggleButton x:Name="ForceToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="1" Click="ForceToggleButton_Click">
                         <ToolTipService.ToolTip>
                             <ToolTip x:Uid="ForceToolTip"/>
                         </ToolTipService.ToolTip>
-
                         <FontIcon Glyph="&#xe7e8;" FontSize="{StaticResource FontIconSize}"/>
-                    </ToggleButton>
-
-                    <ToggleButton x:Name="ExitToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="1" Click="ExitToggleButton_Click">
-                        <ToolTipService.ToolTip>
-                            <ToolTip x:Uid="ExitAfterToolTip"/>
-                        </ToolTipService.ToolTip>
-
-                        <FontIcon Glyph="&#xf78a;" FontSize="{StaticResource FontIconSize}"/>
                     </ToggleButton>
 
                     <ToggleButton x:Name="KeepOnTopToggleButton" Grid.Column="0" Style="{StaticResource AppToggleButton}" Click="KeepOnTopToggleButton_Click">

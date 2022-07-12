@@ -5,6 +5,7 @@
 #endif
 
 #include "PowerController.h"
+#include "ColorsWindow.xaml.h"
 
 using namespace ::PowerClock::Common;
 
@@ -38,7 +39,45 @@ namespace winrt::PowerClock::implementation
     {
         InitializeComponent();
         InitWindow();
-        SetBackground();
+;
+        if (unbox_value_or(ApplicationData::Current().LocalSettings().Values().TryLookup(L"UseAcrylic"), true))
+        {
+            SetAcrylicBackground();
+            UseAcrylicToggleButton().IsChecked(true);
+        }
+        else
+        {
+            IInspectable value = ApplicationData::Current().LocalSettings().Values().TryLookup(L"NightModeBackgroundColor");
+            if (value)
+            {
+                ApplicationDataCompositeValue composite = value.as<ApplicationDataCompositeValue>();
+                uint8_t a = composite.Lookup(L"A").as<uint8_t>();
+                uint8_t r = composite.Lookup(L"R").as<uint8_t>();
+                uint8_t g = composite.Lookup(L"G").as<uint8_t>();
+                uint8_t b = composite.Lookup(L"B").as<uint8_t>();
+                RootGrid().Background(SolidColorBrush(ColorHelper::FromArgb(a, r, g, b)));
+            }
+            UseAcrylicToggleButton().IsChecked(false);
+        }
+    }
+
+    Brush MainWindow::Background()
+    {
+        return _background;
+    }
+
+    void MainWindow::Background(winrt::Microsoft::UI::Xaml::Media::Brush const& value)
+    {
+        _background = value;
+        e_propertyChanged(*this, Microsoft::UI::Xaml::Data::PropertyChangedEventArgs(L"Background"));
+    }
+
+    void MainWindow::SetPosition(winrt::Windows::Graphics::PointInt32 const& position)
+    {
+        if (appWindow)
+        {
+            appWindow.Move(position);
+        }
     }
 
     void MainWindow::Grid_SizeChanged(IInspectable const&, SizeChangedEventArgs const&)
@@ -68,9 +107,9 @@ namespace winrt::PowerClock::implementation
 
     void MainWindow::RootGrid_Loaded(IInspectable const&, RoutedEventArgs const&)
     {
-        ForceToggleButton().IsChecked(unbox_value_or<IReference<bool>>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ForceShutdown"), true));
-        ExitToggleButton().IsChecked(unbox_value_or<IReference<bool>>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ExitWhenTimerEnds"), false));
-        NotifsToggleButton().IsChecked(unbox_value_or<IReference<bool>>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true));
+        ForceToggleButton().IsChecked(unbox_value_or(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ForceShutdown"), true));
+        //ExitToggleButton().IsChecked(unbox_value_or<IReference<bool>>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ExitWhenTimerEnds"), false));
+        NotifsToggleButton().IsChecked(unbox_value_or(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true));
 
 #ifdef _DEBUG
         ResourceLoader resLoader{};
@@ -92,7 +131,7 @@ namespace winrt::PowerClock::implementation
         text.Text(resLoader.GetString(L"HibernateTextBlockText"));
         ActionComboBox().Items().Append(text);
 #endif
-        auto index = unbox_value_or<int32_t>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"SelectedAction"), 0);
+        auto index = unbox_value_or(ApplicationData::Current().LocalSettings().Values().TryLookup(L"SelectedAction"), 0);
         ActionComboBox().SelectedIndex(index);
 
         ApplicationDataContainer container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Timer");
@@ -115,7 +154,7 @@ namespace winrt::PowerClock::implementation
 
     void MainWindow::ExitToggleButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
-        ApplicationData::Current().LocalSettings().Values().Insert(L"ExitWhenTimerEnds", ExitToggleButton().IsChecked());
+        //ApplicationData::Current().LocalSettings().Values().Insert(L"ExitWhenTimerEnds", ExitToggleButton().IsChecked());
     }
 
     void MainWindow::ForceToggleButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
@@ -141,30 +180,22 @@ namespace winrt::PowerClock::implementation
         {
             LeftColumn().Width(GridLength(1, GridUnitType::Star));
             RightColumn().Width(GridLength(0, GridUnitType::Pixel));
-            //SettingsGrid().Visibility(Visibility::Collapsed);
         }
         else
         {
             LeftColumn().Width(GridLength(0, GridUnitType::Pixel));
             RightColumn().Width(GridLength(1, GridUnitType::Star));
-            //SettingsGrid().Visibility(Visibility::Visible);
         }
     }
 
     void MainWindow::KeepOnTopToggleButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e)
     {
         ApplicationData::Current().LocalSettings().Values().Insert(L"KeepOnTop", KeepOnTopToggleButton().IsChecked());
-#ifdef _DEBUG
-        HWND windowHandle = GetWindowFromWindowId(appWindow.Id());
-        SetWindowPos(windowHandle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-#else
         auto&& presenter = appWindow.Presenter().try_as<OverlappedPresenter>();
         if (presenter)
         {
             presenter.IsAlwaysOnTop(KeepOnTopToggleButton().IsChecked().Value());
         }
-#endif // _DEBUG
-
     }
 
     void MainWindow::TimerView_Elapsed(IInspectable const&, winrt::PowerClock::TimerChangeStatus const& e)
@@ -172,7 +203,6 @@ namespace winrt::PowerClock::implementation
         if (e == TimerChangeStatus::Elapsed)
         {
             PowerController controller{ ForceToggleButton().IsChecked().GetBoolean() };
-            bool exit = ExitToggleButton().IsChecked().GetBoolean();
             int index = ActionComboBox().SelectedIndex();
 
             switch (index)
@@ -189,11 +219,6 @@ namespace winrt::PowerClock::implementation
                 case 3: // Hibenate
                     controller.Sleep(true);
                     break;
-            }
-
-            if (exit)
-            {
-                Application::Current().Exit();
             }
         }
         else if (e == TimerChangeStatus::TripPoint)
@@ -221,21 +246,87 @@ namespace winrt::PowerClock::implementation
             // notify user (with tile) if notifications enabled
             NotifyUser(action);
         }
+        else if (e == TimerChangeStatus::Started)
+        {
+            SecondRow().Height(GridLength(0, GridUnitType::Pixel));
+            BottomGrid().Visibility(Visibility::Collapsed);
+        }
+
+        if (e == TimerChangeStatus::Elapsed || e == TimerChangeStatus::Stopped)
+        {
+            SecondRow().Height(GridLength(1, GridUnitType::Auto));
+            BottomGrid().Visibility(Visibility::Visible);
+        }
+    }
+
+    void MainWindow::UseDarkFontToggleButton_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        if (UseDarkFontToggleButton().IsChecked().GetBoolean())
+        {
+            IInspectable o = ApplicationData::Current().LocalSettings().Values().TryLookup(L"NightModeFontColor");
+            if (o)
+            {
+                ApplicationDataCompositeValue composite = o.as<ApplicationDataCompositeValue>();
+                uint8_t a = composite.Lookup(L"A").as<uint8_t>();
+                uint8_t r = composite.Lookup(L"R").as<uint8_t>();
+                uint8_t g = composite.Lookup(L"G").as<uint8_t>();
+                uint8_t b = composite.Lookup(L"B").as<uint8_t>();
+                Timer().CountdownForeground(SolidColorBrush(ColorHelper::FromArgb(a, r, g, b)));
+            }
+            else
+            {
+                Timer().CountdownForeground(Application::Current().Resources().Lookup(box_value(L"NightModeFontBrush")).as<Brush>());
+            }
+        }
+        else
+        {
+            Timer().CountdownForeground(Application::Current().Resources().Lookup(box_value(L"ApplicationForegroundThemeBrush")).as<Brush>());
+        }
+    }
+
+    void MainWindow::UseAcrylicToggleButton_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        if (UseAcrylicToggleButton().IsChecked().GetBoolean())
+        {
+            SetAcrylicBackground();
+        }
+        else
+        {
+            backdropController.RemoveAllSystemBackdropTargets();
+            // TODO: Set window background
+            IInspectable value = ApplicationData::Current().LocalSettings().Values().TryLookup(L"NightModeBackgroundColor");
+            if (value)
+            {
+                ApplicationDataCompositeValue composite = value.as<ApplicationDataCompositeValue>();
+                uint8_t a = composite.Lookup(L"A").as<uint8_t>();
+                uint8_t r = composite.Lookup(L"R").as<uint8_t>();
+                uint8_t g = composite.Lookup(L"G").as<uint8_t>();
+                uint8_t b = composite.Lookup(L"B").as<uint8_t>();
+                RootGrid().Background(SolidColorBrush(ColorHelper::FromArgb(a, r, g, b)));
+            }
+        }
+
+        ApplicationData::Current().LocalSettings().Values().Insert(L"UseAcrylic", UseAcrylicToggleButton().IsChecked());
+    }
+
+    void MainWindow::MoreSettingsButton_Click(IInspectable const&, RoutedEventArgs const&)
+    {
+        if (!colorsWindow)
+        {
+            colorsWindow = make<ColorsWindow>();
+        }
+        colorsWindow.Activate();
     }
 
 
     void MainWindow::InitWindow()
     {
+        ApplicationDataContainer settings = ApplicationData::Current().LocalSettings();
+
         auto nativeWindow{ this->try_as<::IWindowNative>() };
         check_bool(nativeWindow);
         HWND handle{ nullptr };
         nativeWindow->get_WindowHandle(&handle);
-        if (nativeWindow == nullptr)
-        {
-            OutputDebugString(L"Failed to get window handle.");
-            return;
-        }
-        
         WindowId windowID = GetWindowIdFromWindow(handle);
         appWindow = AppWindow::GetFromWindowId(windowID);
         if (appWindow != nullptr)
@@ -249,9 +340,8 @@ namespace winrt::PowerClock::implementation
                 appWindow.TitleBar().ButtonBackgroundColor(Colors::Transparent());
                 appWindow.TitleBar().ButtonForegroundColor(Colors::White());
                 appWindow.TitleBar().ButtonInactiveBackgroundColor(Colors::Transparent());
-                appWindow.TitleBar().ButtonInactiveForegroundColor(Colors::Gray());
-                appWindow.TitleBar().ButtonHoverBackgroundColor(
-                    Application::Current().Resources().TryLookup(box_value(L"AppTitleBarHoverColor")).as<Windows::UI::Color>());
+                appWindow.TitleBar().ButtonInactiveForegroundColor(Application::Current().Resources().TryLookup(box_value(L"AppTitleBarHoverColor")).as<Windows::UI::Color>());
+                appWindow.TitleBar().ButtonHoverBackgroundColor(Application::Current().Resources().TryLookup(box_value(L"ButtonHoverBackgroundColor")).as<Windows::UI::Color>());
                 appWindow.TitleBar().ButtonHoverForegroundColor(Colors::White());
                 appWindow.TitleBar().ButtonPressedBackgroundColor(Colors::Transparent());
                 appWindow.TitleBar().ButtonPressedForegroundColor(Colors::White());
@@ -272,7 +362,7 @@ namespace winrt::PowerClock::implementation
             int height = 270;
             int y = 50;
             int x = 50;
-            ApplicationDataContainer settings = ApplicationData::Current().LocalSettings();
+            
             IInspectable windowSize = settings.Values().TryLookup(L"WindowSize");
             if (windowSize != nullptr)
             {
@@ -289,10 +379,10 @@ namespace winrt::PowerClock::implementation
                 }
             }
             IInspectable windowPosition = settings.Values().TryLookup(L"WindowPosition");
-            if (windowSize != nullptr)
+            if (windowPosition != nullptr)
             {
                 ApplicationDataCompositeValue composite = windowPosition.as<ApplicationDataCompositeValue>();
-                IInspectable posX = composite.TryLookup(L"PositionX");
+                IInspectable posX = composite.Lookup(L"PositionX");
                 IInspectable posY = composite.Lookup(L"PositionY");
                 if (posX)
                 {
@@ -306,24 +396,18 @@ namespace winrt::PowerClock::implementation
 
             if (appWindow.Presenter().Kind() == AppWindowPresenterKind::CompactOverlay) //don't resize if the window is using compact overlay
             {
-                PointInt32 position{ x, y };
-                appWindow.Move(position);
+                appWindow.Move(PointInt32(x, y));
             }
             else
             {
-                RectInt32 rect{};
-                rect.X = x;
-                rect.Y = y;
-                rect.Height = height;
-                rect.Width = width;
-                appWindow.MoveAndResize(rect);
+                appWindow.MoveAndResize(RectInt32(x, y, width, height));
             }
+
+            //mapChangedRevoker = settings.Values().MapChanged({ this, &MainWindow::Settings_MapChanged });
+            mapChangedEventToken = settings.Values().MapChanged({ this, &MainWindow::Settings_MapChanged });
 #pragma endregion
 
-            appWindow.Title(L"Multitool");
-            OverlappedPresenter presenter = appWindow.Presenter().as<OverlappedPresenter>();
-            presenter.IsMaximizable(false);
-                
+            appWindow.Title(L"PwrCLK");
             appWindow.Closing({ this, &MainWindow::AppWindow_Closing });
             appWindow.Changed({ this, &MainWindow::AppWindow_Changed });
         }
@@ -413,12 +497,11 @@ namespace winrt::PowerClock::implementation
         }
     }
 
-    void MainWindow::SetBackground()
+    void MainWindow::SetAcrylicBackground()
     {
         if (DesktopAcrylicController::IsSupported())
         {
-            SolidColorBrush brush{ Colors::Transparent() };
-            RootGrid().Background(brush);
+            RootGrid().Background(SolidColorBrush(Colors::Transparent()));
 
             if (!DispatcherQueue::GetForCurrentThread() && !dispatcherQueueController)
             {
@@ -447,10 +530,11 @@ namespace winrt::PowerClock::implementation
             if (supportsBackdrop)
             {
                 backdropController = DesktopAcrylicController();
-                backdropController.TintOpacity(0.37f);
-                backdropController.LuminosityOpacity(0.01f);
+                backdropController.TintOpacity(0.07f);
+                backdropController.LuminosityOpacity(0.001f);
                 backdropController.SetSystemBackdropConfiguration(systemBackdropConfiguration);
                 backdropController.FallbackColor(Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
+                backdropController.TintColor(Colors::Transparent());
                 backdropController.AddSystemBackdropTarget(supportsBackdrop);
             }
         }
@@ -458,7 +542,7 @@ namespace winrt::PowerClock::implementation
 
     void MainWindow::NotifyUser(hstring const& message)
     {
-        if (unbox_value_or<bool>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true))
+        if (unbox_value_or(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true))
         {
             XmlDocument toastContent{};
             XmlElement root = toastContent.CreateElement(L"toast");
@@ -534,6 +618,19 @@ namespace winrt::PowerClock::implementation
                     KeepOnTopToggleButton().IsEnabled(true);
                 }
             }
+        }
+    }
+
+    void MainWindow::Settings_MapChanged(IObservableMap<hstring, IInspectable> const& sender, IMapChangedEventArgs<hstring> const& args)
+    {
+        if (!UseAcrylicToggleButton().IsChecked().GetBoolean() && args.Key() == L"NightModeBackgroundColor")
+        {
+            ApplicationDataCompositeValue composite = ApplicationData::Current().LocalSettings().Values().Lookup(L"NightModeBackgroundColor").as<ApplicationDataCompositeValue>();
+            uint8_t a = composite.Lookup(L"A").as<uint8_t>();
+            uint8_t r = composite.Lookup(L"R").as<uint8_t>();
+            uint8_t g = composite.Lookup(L"G").as<uint8_t>();
+            uint8_t b = composite.Lookup(L"B").as<uint8_t>();
+            Background(SolidColorBrush(ColorHelper::FromArgb(a, r, g, b)));
         }
     }
 }

@@ -1,0 +1,8 @@
+namespace PowerClock
+{
+    [default_interface]
+    runtimeclass ColorsWindow : Microsoft.UI.Xaml.Window
+    {
+        ColorsWindow();
+    }
+}

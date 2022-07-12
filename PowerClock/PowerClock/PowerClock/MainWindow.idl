@@ -1,8 +1,12 @@
 namespace PowerClock
 {
     [default_interface]
-    runtimeclass MainWindow : Microsoft.UI.Xaml.Window
+    runtimeclass MainWindow : Microsoft.UI.Xaml.Window, Microsoft.UI.Xaml.Data.INotifyPropertyChanged
     {
         MainWindow();
+
+        Microsoft.UI.Xaml.Media.Brush Background{ get; set; };
+
+        void SetPosition(Windows.Graphics.PointInt32 position);
     }
 }
