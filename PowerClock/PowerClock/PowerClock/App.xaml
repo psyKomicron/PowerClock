@@ -29,7 +29,10 @@
             <x:String x:Key="MiniContract2Mirrored">&#xee49;</x:String>
             
             <Color x:Key="AppTitleBarHoverColor">#8A8780</Color>
+            <Color x:Key="NightModeFontColor">#38F5F5F5</Color>
+            <Color x:Key="ButtonHoverBackgroundColor">#38F5F5F5</Color>
             <SolidColorBrush x:Key="PageBackgroundBrush" Color="#2D2D2E"/>
+            <SolidColorBrush x:Key="NightModeFontBrush" Color="{StaticResource NightModeFontColor}"/>
 
             <Style x:Key="AppToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
@@ -43,6 +46,24 @@
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
                 <Setter Property="Padding" Value="5,0,0,8"/>
+            </Style>
+
+            <Style x:Key="GridExpanderStyle" TargetType="Grid">
+                <Setter Property="Margin" Value="0,0,0,10"/>
+                <Setter Property="Background" Value="{ThemeResource ExpanderBackground}"/>
+                <Setter Property="Padding" Value="16,0,8,0"/>
+                <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}"/>
+                <Setter Property="BorderThickness" Value="{StaticResource ExpanderBorderThickness}"/>
+                <Setter Property="BorderBrush" Value="{ThemeResource ExpanderHeaderBorderBrush}"/>
+                <Setter Property="MinHeight" Value="{StaticResource ExpanderMinHeight}"/>
+                <Setter Property="Height" Value="68"/>
+            </Style>
+
+            <Style x:Key="ExpanderSettingStyle" TargetType="Expander">
+                <Setter Property="Margin" Value="0,0,0,10"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="MinHeight" Value="68"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>
