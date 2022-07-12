@@ -126,7 +126,13 @@
   <data name="HibernateTextBlock.Text" xml:space="preserve">
     <value>Hiberner</value>
   </data>
+  <data name="HibernateTextBlockText" xml:space="preserve">
+    <value>Hiberner</value>
+  </data>
   <data name="LockTextBlock.Text" xml:space="preserve">
+    <value>Verrouiller</value>
+  </data>
+  <data name="LockTextBlockText" xml:space="preserve">
     <value>Verrouiller</value>
   </data>
   <data name="NotificationHibernate30" xml:space="preserve">
@@ -153,7 +159,13 @@
   <data name="ShutdownTextBlock.Text" xml:space="preserve">
     <value>Eteindre</value>
   </data>
+  <data name="ShutdownTextBlockText" xml:space="preserve">
+    <value>Eteindre</value>
+  </data>
   <data name="SleepTextBlock.Text" xml:space="preserve">
+    <value>Mettre en veille</value>
+  </data>
+  <data name="SleepTextBlockText" xml:space="preserve">
     <value>Mettre en veille</value>
   </data>
   <data name="StartTimerToolTip.Content" xml:space="preserve">
