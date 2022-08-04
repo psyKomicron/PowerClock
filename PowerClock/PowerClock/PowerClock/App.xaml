@@ -16,28 +16,49 @@
             <x:Double x:Key="TimerButtonWidth">39</x:Double>
             <x:Double x:Key="FontIconSize">16</x:Double>
             <x:Double x:Key="BaseFontSize">60</x:Double>
-
             <x:Double x:Key="Below200FontSize">30</x:Double>
             <x:Double x:Key="Below300FontSize">40</x:Double>
-
             <x:Double x:Key="Over400FontSize">70</x:Double>
+            <x:Double x:Key="WindowSettingButtonHeight">34</x:Double>
+            <x:Double x:Key="ButtonFlyoutContentWidth">50</x:Double>
+            <x:Double x:Key="BackdropTintOpacity">0.2</x:Double>
+            <x:Double x:Key="BackdropLuminosityOpacity">0.83</x:Double>
+            <x:Double x:Key="BackdropSecondaryTintOpacity">0.3</x:Double>
+            <x:Double x:Key="BackdropSecondaryLuminosityOpacity">0.9</x:Double>
+            <x:Double x:Key="ExpanderGridRowSpacing">10</x:Double>
 
             <x:Int32 x:Key="CompactModeHeight">210</x:Int32>
             <x:Int32 x:Key="CompactModeWidth">360</x:Int32>
+            <x:Int32 x:Key="ColorsWindowWidth">680</x:Int32>
+            <x:Int32 x:Key="ColorsWindowHeight">700</x:Int32>
 
             <x:String x:Key="MiniExpand2Mirrored">&#xee47;</x:String>
             <x:String x:Key="MiniContract2Mirrored">&#xee49;</x:String>
+
+            <Thickness x:Key="ExpanderContentMargin">40,0,19,0</Thickness>
+            <Thickness x:Key="ButtonPadding">10,7</Thickness>
+            <Thickness x:Key="ToggleSwitchCenterMargin">0,0,-90,0</Thickness>
+            <Thickness x:Key="ButtonFlyoutNegativeMargin">-6,-5,-6,-7</Thickness>
+            <Thickness x:Key="TimerRunningMargin">0,0,0,15</Thickness>
             
             <Color x:Key="AppTitleBarHoverColor">#8A8780</Color>
-            <Color x:Key="NightModeFontColor">#38F5F5F5</Color>
             <Color x:Key="ButtonHoverBackgroundColor">#38F5F5F5</Color>
+            <Color x:Key="NightModeFontColor">#38F5F5F5</Color>
+
             <SolidColorBrush x:Key="PageBackgroundBrush" Color="#2D2D2E"/>
             <SolidColorBrush x:Key="NightModeFontBrush" Color="{StaticResource NightModeFontColor}"/>
+
+            <AcrylicBrush
+                x:Key="InAppAcrylicBrush"
+                TintOpacity="0.3" 
+                TintLuminosityOpacity="0.02"
+                TintColor="{ThemeResource SolidBackgroundFillColorQuarternary}"
+                FallbackColor="{ThemeResource SolidBackgroundFillColorSecondary}"/>
 
             <Style x:Key="AppToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Height" Value="34"/>
+                <Setter Property="Height" Value="{StaticResource WindowSettingButtonHeight}"/>
                 <Setter Property="FontWeight" Value="Normal"/>
             </Style>
 
@@ -45,7 +66,7 @@
                 <Setter Property="FontSize" Value="{StaticResource BaseFontSize}"/>
                 <Setter Property="HorizontalAlignment" Value="Center"/>
                 <Setter Property="VerticalAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="5,0,0,8"/>
+                <Setter Property="Padding" Value="8,0,0,12"/>
             </Style>
 
             <Style x:Key="GridExpanderStyle" TargetType="Grid">
@@ -62,9 +83,32 @@
             <Style x:Key="ExpanderSettingStyle" TargetType="Expander">
                 <Setter Property="Margin" Value="0,0,0,10"/>
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                 <Setter Property="MinHeight" Value="68"/>
             </Style>
+
+            <Style x:Key="ExpanderSeparatorStyle" TargetType="Rectangle">
+                <Setter Property="Fill" Value="{ThemeResource SolidBackgroundFillColorSecondaryBrush}"/>
+                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="Height" Value="1"/>
+                <Setter Property="Margin" Value="-56,0,-35,0"/>
+            </Style>
+
+            <Style x:Key="TimerAccentButtonStyle" TargetType="Button" BasedOn="{StaticResource AccentButtonStyle}">
+                <Setter Property="Height" Value="{StaticResource TimerButtonHeight}"/>
+                <Setter Property="MaxHeight" Value="{StaticResource TimerButtonHeight}"/>
+                <Setter Property="Width" Value="{StaticResource TimerButtonWidth}"/>
+                <Setter Property="Padding" Value="2"/>
+            </Style>
+
+            <Style x:Key="TimerButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="Height" Value="{StaticResource TimerButtonHeight}"/>
+                <Setter Property="MaxHeight" Value="{StaticResource TimerButtonHeight}"/>
+                <Setter Property="Width" Value="{StaticResource TimerButtonWidth}"/>
+                <Setter Property="Padding" Value="2"/>
+            </Style>
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>

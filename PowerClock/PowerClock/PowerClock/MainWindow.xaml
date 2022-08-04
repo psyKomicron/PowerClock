@@ -37,7 +37,7 @@
                     CornerRadius="0,0,4,0"
                     BorderThickness="0"/>
             </Grid>
-        </Grid>
+        </Grid> 
 
         <Grid x:Name="ContentGrid" Grid.Row="1" Padding="10,0">
             <Grid.RowDefinitions>
@@ -107,7 +107,7 @@
                     Grid.Column="1"
                     ColumnSpacing="10" 
                     HorizontalAlignment="Stretch" 
-                    Background="{ThemeResource ButtonBackground}"
+                    Background="{ThemeResource InAppAcrylicBrush}"
                     Padding="5"
                     CornerRadius="{ThemeResource ControlCornerRadius}">
                     <Grid.ScaleTransition>
@@ -129,30 +129,39 @@
 
                         <Button.Flyout>
                             <Flyout Placement="Top">
-                                <StackPanel Orientation="Horizontal" Spacing="10" Margin="-5,-5,-5,-7">
+                                <Grid ColumnSpacing="10" Margin="{StaticResource ButtonFlyoutNegativeMargin}">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
 
                                     <ToggleButton
-                                        x:Name="UseAcrylicToggleButton"
-                                        IsChecked="True"
-                                        Style="{StaticResource AppToggleButton}"
-                                        Width="50"
-                                        Click="UseAcrylicToggleButton_Click">
-                                        <FontIcon Glyph="&#xf5ef;" FontSize="{StaticResource FontIconSize}"/>
-                                    </ToggleButton>
-
-                                    <ToggleButton
-                                        x:Name="UseDarkFontToggleButton" 
+                                        x:Name="DarkModeToggleButton" 
                                         IsChecked="False"
+                                        Grid.Column="0"
                                         Style="{StaticResource AppToggleButton}" 
-                                        Width="50"
-                                        Click="UseDarkFontToggleButton_Click">
-                                        <FontIcon Glyph="&#xf08c;" FontSize="{StaticResource FontIconSize}"/>
+                                        Width="{StaticResource ButtonFlyoutContentWidth}"
+                                        Click="DarkModeToggleButton_Click">
+                                        <FontIcon Glyph="&#xe708;" FontSize="{StaticResource FontIconSize}"/>
                                     </ToggleButton>
 
-                                    <Button x:Name="MoreSettingsButton" Click="MoreSettingsButton_Click" Width="50">
+                                    <Border 
+                                        Grid.Column="1"
+                                        Width="2"
+                                        Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}"
+                                        VerticalAlignment="Stretch" 
+                                        HorizontalAlignment="Stretch"/>
+
+                                    <Button 
+                                        x:Name="MoreSettingsButton" 
+                                        Width="{StaticResource ButtonFlyoutContentWidth}"
+                                        Height="{StaticResource WindowSettingButtonHeight}"
+                                        Grid.Column="2"
+                                        Click="MoreSettingsButton_Click">
                                         <FontIcon Glyph="&#xe78b;" FontSize="{StaticResource FontIconSize}"/>
                                     </Button>
-                                </StackPanel>
+                                </Grid>
                             </Flyout>
                         </Button.Flyout>
                     </Button>

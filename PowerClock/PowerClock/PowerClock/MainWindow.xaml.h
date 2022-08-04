@@ -35,8 +35,7 @@ namespace winrt::PowerClock::implementation
         void SettingsButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void KeepOnTopToggleButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void TimerView_Elapsed(winrt::Windows::Foundation::IInspectable const& sender, winrt::PowerClock::TimerChangeStatus const& e);
-        void UseDarkFontToggleButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
-        void UseAcrylicToggleButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
+        void DarkModeToggleButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
         void MoreSettingsButton_Click(winrt::Windows::Foundation::IInspectable const& sender, winrt::Microsoft::UI::Xaml::RoutedEventArgs const& e);
 
     private:
@@ -45,19 +44,22 @@ namespace winrt::PowerClock::implementation
         winrt::Windows::System::DispatcherQueueController dispatcherQueueController = nullptr;
         winrt::Microsoft::UI::Composition::SystemBackdrops::SystemBackdropConfiguration systemBackdropConfiguration = nullptr;
         winrt::Microsoft::UI::Xaml::FrameworkElement::ActualThemeChanged_revoker themeChangedRevoker;
-        winrt::Microsoft::UI::Composition::SystemBackdrops::DesktopAcrylicController backdropController = nullptr;
+        winrt::Microsoft::UI::Composition::SystemBackdrops::ISystemBackdropControllerWithTargets backdropController = nullptr;
         winrt::Microsoft::UI::Xaml::Media::Brush _background{ nullptr };
         winrt::PowerClock::ColorsWindow colorsWindow{ nullptr };
         winrt::Windows::Foundation::Collections::IObservableMap<hstring, IInspectable>::MapChanged_revoker mapChangedRevoker;
         winrt::event_token mapChangedEventToken;
+        winrt::Microsoft::UI::Xaml::Window::Closed_revoker colorsWindowClosedRevoker;
+        winrt::PowerClock::ColorsWindow::BackdropChanged_revoker colorsWindowBackdropChangedRevoker;
 
         winrt::event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> e_propertyChanged;
 
         void InitWindow();
         void SaveSettings();
         void SetDragRectangles();
-        void SetAcrylicBackground();
+        void SetBackground(winrt::PowerClock::BackdropControllerType const& backdropType);
         void NotifyUser(winrt::hstring const& message);
+        void SetSolidBackground();
 
         void AppWindow_Closing(Microsoft::UI::Windowing::AppWindow const&, Microsoft::UI::Windowing::AppWindowClosingEventArgs const& args);
         void AppWindow_Changed(Microsoft::UI::Windowing::AppWindow const&, Microsoft::UI::Windowing::AppWindowChangedEventArgs const& args);

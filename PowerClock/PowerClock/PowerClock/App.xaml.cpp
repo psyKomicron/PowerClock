@@ -2,6 +2,8 @@
 
 #include "App.xaml.h"
 #include "MainWindow.xaml.h"
+#include "ColorsWindow.xaml.h"
+#include "Constants.h"
 
 using namespace winrt;
 using namespace Windows::Foundation;
@@ -42,21 +44,11 @@ App::App()
 /// <param name="e">Details about the launch request and process.</param>
 void App::OnLaunched(LaunchActivatedEventArgs const& args)
 {
-#if FALSE
-    auto&& instances = AppInstance::GetInstances();
-    if (instances.Size() == 1)
-    {
-        window = make<MainWindow>();
-        window.Activate();
-    }
-    else
-    {
-        instances.GetAt(0).RedirectActivationToAsync(AppInstance::GetCurrent().GetActivatedEventArgs());
-        Exit();
-    }
+#ifdef SPAWN_COLORS_WINDOW
+    window = make<ColorsWindow>();
+    window.Activate();
 #else
     window = make<MainWindow>();
     window.Activate();
-#endif // FALSE
-
+#endif
 }

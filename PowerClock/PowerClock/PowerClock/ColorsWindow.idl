@@ -4,5 +4,14 @@ namespace PowerClock
     runtimeclass ColorsWindow : Microsoft.UI.Xaml.Window
     {
         ColorsWindow();
-    }
+
+        event Windows.Foundation.TypedEventHandler<ColorsWindow, BackdropControllerType> BackdropChanged;
+    };
+
+    enum BackdropControllerType
+    {
+        None,
+        AcrylicBackdrop,
+        MicaBackdrop
+    };
 }

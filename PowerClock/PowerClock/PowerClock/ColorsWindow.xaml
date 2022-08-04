@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource SolidBackgroundFillColorSecondary}">
+    <Grid x:Name="RootGrid" Background="{ThemeResource SolidBackgroundFillColorSecondary}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
@@ -19,61 +19,153 @@
 
         <ListView Grid.Row="1" SelectionMode="None">
 
-            <Grid Style="{StaticResource GridExpanderStyle}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+            <Expander Style="{StaticResource ExpanderSettingStyle}">
+                <Expander.Header>
+                    <Grid Grid.Column="0" Padding="0,10" ColumnSpacing="15" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                <Grid Grid.Column="0" Padding="0,10" ColumnSpacing="15" VerticalAlignment="Center">
+                        <FontIcon Glyph="&#xe8d3;" VerticalAlignment="Center" Grid.RowSpan="2"/>
+                        <TextBlock Text="Night mode font color" VerticalAlignment="Center" Grid.Column="1"/>
+                        <TextBlock Text="Change the app's timer color when using night mode" FontSize="12" Opacity="0.7" Grid.Row="1" Grid.Column="1"/>
+                    </Grid>
+                </Expander.Header>
+
+                <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
+                    <Grid.Resources>
+                        <Style TargetType="Rectangle" BasedOn="{StaticResource ExpanderSeparatorStyle}">
+                            <Setter Property="Grid.ColumnSpan" Value="2"/>
+                        </Style>
+                    </Grid.Resources>
 
-                    <FontIcon Glyph="&#xe8d3;" VerticalAlignment="Center" Grid.RowSpan="2"/>
-                    <TextBlock Text="Night mode font color" VerticalAlignment="Center" Grid.Column="1"/>
-                    <TextBlock Text="Change the app's timer color when using night mode" FontSize="12" Opacity="0.7" Grid.Row="1" Grid.Column="1"/>
+                    <TextBlock Text="Custom colors" VerticalAlignment="Center"/>
+                    <Button
+                        x:Name="OpenDialogForFontColor"
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Padding="{StaticResource ButtonPadding}"
+                        Content="View colors"
+                        Click="OpenDialogForFontColor_Click"/>
+
+                    <Rectangle Grid.Row="1"/>
+
+                    <Grid Grid.Row="2" HorizontalAlignment="Stretch" ColumnSpacing="10" RowSpacing="15">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Font color"/>
+                        <VariableSizedWrapGrid Grid.Row="1" Orientation="Horizontal" ItemHeight="40" ItemWidth="40" MaximumRowsOrColumns="10">
+                            <VariableSizedWrapGrid.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}"/>
+                                    <Setter Property="Margin" Value="2"/>
+                                </Style>
+                            </VariableSizedWrapGrid.Resources>
+
+                            <Border Background="Black"/>
+                            <Border Background="White"/>
+                            <Border Background="Red"/>
+                            <Border Background="Blue"/>
+                            <Border Background="Green"/>
+                            <Border Background="MediumPurple"/>
+                            <Border Background="Goldenrod"/>
+                            <Border Background="Black"/>
+                        </VariableSizedWrapGrid>
+                    </Grid>
                 </Grid>
+            </Expander>
 
-                <Button x:Name="OpenDialogForFontColor" Grid.Column="2" VerticalAlignment="Stretch" MaxHeight="40" Click="OpenDialogForFontColor_Click">
-                    <FontIcon Glyph="&#xe790;" FontSize="{StaticResource FontIconSize}"/>
-                </Button>
-            </Grid>
+            <Expander Style="{StaticResource ExpanderSettingStyle}">
+                <Expander.Header>
+                    <Grid Grid.Column="0" Padding="0,10" ColumnSpacing="15" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-            <Grid Style="{StaticResource GridExpanderStyle}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                        <FontIcon Glyph="&#xef1f;" VerticalAlignment="Center" Grid.RowSpan="2"/>
+                        <TextBlock Text="Night mode app background" VerticalAlignment="Center" Grid.Column="1"/>
+                        <TextBlock Text="Change the app's background color (when not using transparency effects)" FontSize="12" Opacity="0.7" Grid.Row="1" Grid.Column="1"/>
+                    </Grid>
+                </Expander.Header>
 
-                <Grid Grid.Column="0" Padding="0,10" ColumnSpacing="15" VerticalAlignment="Center">
+                <Grid Margin="{StaticResource ExpanderContentMargin}" RowSpacing="{StaticResource ExpanderGridRowSpacing}">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
+                    <Grid.Resources>
+                        <Style TargetType="Rectangle" BasedOn="{StaticResource ExpanderSeparatorStyle}">
+                            <Setter Property="Grid.ColumnSpan" Value="2"/>
+                        </Style>
+                    </Grid.Resources>
 
-                    <FontIcon Glyph="&#xef1f;" VerticalAlignment="Center" Grid.RowSpan="2"/>
-                    <TextBlock Text="Night mode window color" VerticalAlignment="Center" Grid.Column="1"/>
-                    <TextBlock Text="Change the app's background color (when not using transparency effects)" FontSize="12" Opacity="0.7" Grid.Row="1" Grid.Column="1"/>
+                    <TextBlock Text="Custom colors" VerticalAlignment="Center"/>
+                    <Button
+                        x:Name="OpenDialogForBackground"
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Padding="{StaticResource ButtonPadding}"
+                        Content="View colors"
+                        Click="OpenDialogForBackground_Click"/>
+
+                    <Rectangle Grid.Row="1"/>
+
+                    <Grid Grid.Row="2" HorizontalAlignment="Stretch" ColumnSpacing="10" RowSpacing="15">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="Background color"/>
+                        <VariableSizedWrapGrid Grid.Row="1" Orientation="Horizontal" ItemHeight="40" ItemWidth="40" MaximumRowsOrColumns="10">
+                            <VariableSizedWrapGrid.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="{StaticResource ControlCornerRadius}"/>
+                                    <Setter Property="Margin" Value="2"/>
+                                </Style>
+                            </VariableSizedWrapGrid.Resources>
+
+                            <Border Background="Black"/>
+                            <Border Background="White"/>
+                            <Border Background="Red"/>
+                            <Border Background="Blue"/>
+                            <Border Background="Green"/>
+                            <Border Background="MediumPurple"/>
+                            <Border Background="Goldenrod"/>
+                            <Border Background="Black"/>
+                        </VariableSizedWrapGrid>
+                    </Grid>
                 </Grid>
-
-                <Button x:Name="OpenDialogForBackground" Grid.Column="2" VerticalAlignment="Stretch" MaxHeight="40" Click="OpenDialogForBackground_Click">
-                    <FontIcon Glyph="&#xe790;" FontSize="{StaticResource FontIconSize}"/>
-                </Button>
-            </Grid>
-
-            <ListViewHeaderItem/>
+            </Expander>
 
             <Expander Style="{StaticResource ExpanderSettingStyle}" HorizontalContentAlignment="Stretch">
                 <Expander.Header>
@@ -128,6 +220,32 @@
                         </Button>
                     </Grid>
                 </Grid>
+            </Expander>
+
+            <ListViewHeaderItem/>
+
+            <Expander Style="{StaticResource ExpanderSettingStyle}">
+                <Expander.Header>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Transparency effects" VerticalAlignment="Center"/>
+                        <ToggleSwitch 
+                            x:Name="TransparencyEffectToggleSwitch"
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Margin="{StaticResource ToggleSwitchCenterMargin}"
+                            Toggled="TransparencyEffectToggleSwitch_Toggled"/>
+                    </Grid>
+                </Expander.Header>
+
+                <StackPanel Margin="{StaticResource ExpanderContentMargin}" Spacing="{StaticResource ExpanderGridRowSpacing}">
+                    <RadioButton x:Name="AcrylicRadioButton" Tag="AcrylicButton" Content="Acrylic" Click="TransparencyTypeRadioButton_Click"/>
+                    <RadioButton x:Name="MicaRadioButton" Content="Mica" Click="TransparencyTypeRadioButton_Click"/>
+                </StackPanel>
             </Expander>
         </ListView>
 

@@ -136,38 +136,28 @@
             Grid.Row="0"
             Grid.RowSpan="3"
             HorizontalAlignment="Center"
-            Spacing="{StaticResource StackPanelButtonSpacing}"
             VerticalAlignment="Center"
-            Orientation="Vertical">
+            Orientation="Vertical"
+            Spacing="12">
 
             <Button 
                 x:Name="StartTimerButton"
-                Padding="2"
-                Height="{StaticResource TimerButtonHeight}"
-                MaxHeight="{StaticResource TimerButtonHeight}"
-                Width="{StaticResource TimerButtonWidth}"
-                Style="{ThemeResource AccentButtonStyle}"
-                Grid.Column="0"
+                Style="{StaticResource TimerAccentButtonStyle}"
                 Click="StartTimerButton_Click">
                 <ToolTipService.ToolTip>
                     <ToolTip x:Uid="StartTimerToolTip"/>
                 </ToolTipService.ToolTip>
-
                 <SymbolIcon x:Name="StartTimerButtonIcon" Symbol="Play"/>
             </Button>
+
             <Button 
                 x:Name="RestartTimerButton"
-                Padding="2"
-                Height="{StaticResource TimerButtonHeight}"
-                MaxHeight="{StaticResource TimerButtonHeight}"
-                Width="{StaticResource TimerButtonWidth}"
-                MaxWidth="{StaticResource TimerButtonWidth}"
-                Grid.Column="1"
+                Style="{StaticResource TimerButtonStyle}"
+                Grid.Row="1"
                 Click="RestartTimerButton_Click">
                 <ToolTipService.ToolTip>
                     <ToolTip x:Uid="RestartTimerToolTip"/>
                 </ToolTipService.ToolTip>
-
                 <SymbolIcon Symbol="Refresh"/>
             </Button>
 

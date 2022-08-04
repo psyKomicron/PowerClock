@@ -5,6 +5,7 @@
 #endif
 
 #include <chrono>
+#include "Helper.h"
 
 using namespace std::chrono_literals;
 
@@ -279,7 +280,7 @@ namespace winrt::PowerClock::implementation
         originalTimeSpan = std::chrono::hours(Hours());
         originalTimeSpan += std::chrono::minutes(Minutes());
         originalTimeSpan += std::chrono::seconds(Seconds());
-        currentTimeSpan = TimeSpan{ originalTimeSpan };
+        currentTimeSpan = TimeSpan(originalTimeSpan);
 
         dispatcherTimer.Start();
         isTimerRunning = true;
@@ -291,6 +292,7 @@ namespace winrt::PowerClock::implementation
         ControlButtonsPanel().Orientation(Orientation::Horizontal);
 
         StartTimerButtonIcon().Symbol(Symbol::Pause);
+        ControlButtonsPanel().Margin(::PowerClock::Common::Helper::GetAppResource<Thickness>(L"TimerRunningMargin"));
         ButtonsEnabled(false);
         IsReadOnly(true);
     }
@@ -310,6 +312,7 @@ namespace winrt::PowerClock::implementation
         Grid::SetRowSpan(ControlButtonsPanel(), 3);
         Grid::SetColumn(ControlButtonsPanel(), 4);
         ControlButtonsPanel().Orientation(Orientation::Vertical);
+        ControlButtonsPanel().Margin(Thickness(0));
     }
 
     void TimerView::UpdateView(winrt::Windows::Foundation::TimeSpan timeSpan)

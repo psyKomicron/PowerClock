@@ -109,6 +109,8 @@
       <DependentUpon>ColorsWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
+    <ClInclude Include="Constants.h" />
+    <ClInclude Include="Helper.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>

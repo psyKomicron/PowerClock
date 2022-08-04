@@ -11,6 +11,7 @@ namespace winrt::PowerClock::implementation
         void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);
 
     private:
-        winrt::PowerClock::MainWindow window{ nullptr };
+        //winrt::PowerClock::MainWindow window{ nullptr };
+        winrt::Microsoft::UI::Xaml::Window window{ nullptr };
     };
 }
