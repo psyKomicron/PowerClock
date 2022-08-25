@@ -205,6 +205,31 @@ namespace winrt::PowerClock::implementation
         MicaRadioButton().IsChecked(backdrop == MICA_BACKDROP);
         AcrylicRadioButton().IsChecked(backdrop == ACRYLIC_BACKDROP);
 
+#ifdef _DEBUG
+        SettingsListView().Items().Append(ListViewHeaderItem{});
+
+        Grid grid{};
+        ColumnDefinition col1{};
+        col1.Width(GridLengthHelper::FromValueAndType(1, GridUnitType::Star));
+        grid.ColumnDefinitions().Append(col1);
+        ColumnDefinition col2{};
+        col2.Width(GridLengthHelper::FromValueAndType(1, GridUnitType::Auto));
+        grid.ColumnDefinitions().Append(col2);
+
+        TextBlock textBlock{};
+        textBlock.Text(L"DEBUG");
+        Grid::SetColumn(textBlock, 0);
+
+        TextBlock timestamp{};
+        //timestamp.Text(to_hstring(__DATE__) + L" - " + to_hstring(__TIME__));
+        timestamp.Text(to_hstring(__TIMESTAMP__));
+        Grid::SetColumn(timestamp, 1);
+
+        grid.Children().Append(textBlock);
+        grid.Children().Append(timestamp);
+        SettingsListView().Items().Append(grid);
+#endif
+
         SetBackground(backdrop == ACRYLIC_BACKDROP);
     }
 

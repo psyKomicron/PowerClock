@@ -402,8 +402,28 @@ namespace winrt::PowerClock::implementation
 
     void MainWindow::SaveSettings()
     {
+        if (!isWindowFullscreen)
+        {
+            SavePosition();
+        }
+
+        ApplicationData::Current().LocalSettings().Values().Insert(L"SelectedAction", box_value(ActionComboBox().SelectedIndex()));
+
+        auto&& container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Timer");
+        if (!container)
+        {
+            container = ApplicationData::Current().LocalSettings().CreateContainer(L"Timer", ApplicationDataCreateDisposition::Always);
+        }
+        container.Values().Insert(L"Hours", box_value(Timer().Hours()));
+        container.Values().Insert(L"Minutes", box_value(Timer().Minutes()));
+        container.Values().Insert(L"Seconds", box_value(Timer().Seconds()));
+    }
+
+    void MainWindow::SavePosition()
+    {
         IPropertySet settings = ApplicationData::Current().LocalSettings().Values();
         ApplicationDataCompositeValue setting = nullptr;
+
         if (settings.HasKey(L"WindowSize"))
         {
             setting = settings.Lookup(L"WindowSize").as<ApplicationDataCompositeValue>();
@@ -416,7 +436,6 @@ namespace winrt::PowerClock::implementation
         setting.Insert(L"Height", box_value(appWindow.Size().Height));
         settings.Insert(L"WindowSize", setting);
 
-        setting = nullptr;
         if (settings.HasKey(L"WindowPosition"))
         {
             setting = settings.Lookup(L"WindowPosition").as<ApplicationDataCompositeValue>();
@@ -428,17 +447,6 @@ namespace winrt::PowerClock::implementation
         setting.Insert(L"PositionX", box_value(appWindow.Position().X));
         setting.Insert(L"PositionY", box_value(appWindow.Position().Y));
         settings.Insert(L"WindowPosition", setting);
-
-        ApplicationData::Current().LocalSettings().Values().Insert(L"SelectedAction", box_value(ActionComboBox().SelectedIndex()));
-
-        auto&& container = ApplicationData::Current().LocalSettings().Containers().TryLookup(L"Timer");
-        if (!container)
-        {
-            container = ApplicationData::Current().LocalSettings().CreateContainer(L"Timer", ApplicationDataCreateDisposition::Always);
-        }
-        container.Values().Insert(L"Hours", box_value(Timer().Hours()));
-        container.Values().Insert(L"Minutes", box_value(Timer().Minutes()));
-        container.Values().Insert(L"Seconds", box_value(Timer().Seconds()));
     }
 
     void MainWindow::SetDragRectangles()
@@ -619,9 +627,13 @@ namespace winrt::PowerClock::implementation
             if (args.DidSizeChange())
             {
                 OverlappedPresenter presenter = appWindow.Presenter().try_as<OverlappedPresenter>();
-                if (presenter && presenter.State() != OverlappedPresenterState::Maximized)
+                if (presenter)
                 {
-                    SaveSettings();
+                    if (presenter.State() != OverlappedPresenterState::Maximized)
+                    {
+                        SavePosition();
+                    }
+                    isWindowFullscreen = presenter.State() == OverlappedPresenterState::Maximized;
                 }
 
                 SettingsButton().Visibility(RootGrid().ActualWidth() < 180 ? Visibility::Collapsed : Visibility::Visible);

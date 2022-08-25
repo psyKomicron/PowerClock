@@ -17,7 +17,7 @@
             <TextBlock Text="{x:Bind Title}" Grid.Column="1" VerticalAlignment="Center" Margin="10,0" Style="{StaticResource BodyStrongTextBlockStyle}"/>
         </Grid>
 
-        <ListView Grid.Row="1" SelectionMode="None">
+        <ListView x:Name="SettingsListView" Grid.Row="1" SelectionMode="None">
 
             <Expander Style="{StaticResource ExpanderSettingStyle}">
                 <Expander.Header>
@@ -250,7 +250,7 @@
         </ListView>
 
         <ContentDialog x:Name="ColorPickerContentDialog" DefaultButton="Primary" PrimaryButtonText="Edit" SecondaryButtonText="Cancel">
-            <ColorPicker x:Name="Color_Picker"/>
+            <ColorPicker x:Name="Color_Picker" IsHexInputVisible="True" IsColorChannelTextInputVisible="False" ColorSpectrumShape="Ring"/>
         </ContentDialog>
     </Grid>
 </Window>
