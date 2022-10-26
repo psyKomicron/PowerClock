@@ -102,97 +102,62 @@
                     </ComboBoxItem>
                 </ComboBox>
 
-                <Grid 
-                    x:Name="SettingsGrid"
-                    Grid.Column="1"
-                    ColumnSpacing="10" 
-                    HorizontalAlignment="Stretch" 
-                    Background="{ThemeResource InAppAcrylicBrush}"
-                    Padding="5"
-                    CornerRadius="{ThemeResource ControlCornerRadius}">
-                    <Grid.ScaleTransition>
-                        <Vector3Transition Components="Y"/>
-                    </Grid.ScaleTransition>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
+                <ScrollViewer Grid.Column="1">
+                    <Grid 
+                        x:Name="SettingsGrid"
+                        ColumnSpacing="7" 
+                        HorizontalAlignment="Stretch" 
+                        Background="{ThemeResource InAppAcrylicBrush}"
+                        Padding="5"
+                        CornerRadius="{ThemeResource ControlCornerRadius}">
+                        <Grid.ScaleTransition>
+                            <Vector3Transition Components="Y"/>
+                        </Grid.ScaleTransition>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
 
-                    <Button
-                        Grid.Column="3" 
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch">
+                        <ToggleButton x:Name="KeepOnTopToggleButton" Grid.Column="0" Style="{StaticResource AppToggleButton}" Click="KeepOnTopToggleButton_Click">
+                            <FontIcon Glyph="&#xe718;" FontSize="{StaticResource FontIconSize}"/>
+                        </ToggleButton>
 
-                        <FontIcon Glyph="&#xe771;" FontSize="{StaticResource FontIconSize}"/>
+                        <ToggleButton x:Name="ForceToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="1" Click="ForceToggleButton_Click">
+                            <ToolTipService.ToolTip>
+                                <ToolTip x:Uid="ForceToolTip"/>
+                            </ToolTipService.ToolTip>
+                            <FontIcon Glyph="&#xe7e8;" FontSize="{StaticResource FontIconSize}"/>
+                        </ToggleButton>
 
-                        <Button.Flyout>
-                            <Flyout Placement="Top">
-                                <Grid ColumnSpacing="10" Margin="{StaticResource ButtonFlyoutNegativeMargin}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition/>
-                                    </Grid.ColumnDefinitions>
+                        <ToggleButton
+                            x:Name="NightModeToggleButton" 
+                            IsThreeState="True"
+                            IsChecked="{x:Null}"
+                            Grid.Column="2"
+                            Style="{StaticResource AppToggleButton}"
+                            Click="NightModeToggleButton_Click">
+                            <FontIcon x:Name="NightModeToggleButtonContent" Glyph="{StaticResource NightModeGlyph}" FontSize="{StaticResource FontIconSize}"/>
+                        </ToggleButton>
 
-                                    <ToggleButton
-                                        x:Name="DarkModeToggleButton" 
-                                        IsChecked="False"
-                                        Grid.Column="0"
-                                        Style="{StaticResource AppToggleButton}" 
-                                        Width="{StaticResource ButtonFlyoutContentWidth}"
-                                        Click="DarkModeToggleButton_Click">
-                                        <FontIcon Glyph="&#xe708;" FontSize="{StaticResource FontIconSize}"/>
-                                    </ToggleButton>
+                        <Border 
+                            Grid.Column="3"
+                            Width="2"
+                            Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}"
+                            VerticalAlignment="Stretch" 
+                            HorizontalAlignment="Stretch"/>
 
-                                    <Border 
-                                        Grid.Column="1"
-                                        Width="2"
-                                        Background="{ThemeResource MenuFlyoutSeparatorThemeBrush}"
-                                        VerticalAlignment="Stretch" 
-                                        HorizontalAlignment="Stretch"/>
-
-                                    <Button 
-                                        x:Name="MoreSettingsButton" 
-                                        Width="{StaticResource ButtonFlyoutContentWidth}"
-                                        Height="{StaticResource WindowSettingButtonHeight}"
-                                        Grid.Column="2"
-                                        Click="MoreSettingsButton_Click">
-                                        <FontIcon Glyph="&#xe78b;" FontSize="{StaticResource FontIconSize}"/>
-                                    </Button>
-                                </Grid>
-                            </Flyout>
-                        </Button.Flyout>
-                    </Button>
-
-                    <ToggleButton 
-                        x:Name="NotifsToggleButton" 
-                        Style="{StaticResource AppToggleButton}" 
-                        Grid.Column="2" 
-                        Click="NotifsToggleButton_Click" 
-                        Checked="NotifsToggleButton_Checked" 
-                        Unchecked="NotifsToggleButton_Unchecked">
-                        <ToolTipService.ToolTip>
-                            <ToolTip x:Uid="NotificationsToolTip"/>
-                        </ToolTipService.ToolTip>
-                        <Grid>
-                            <FontIcon x:Name="RingerOn" Glyph="&#xea8f;" FontSize="{StaticResource FontIconSize}"/>
-                            <FontIcon x:Name="RingerOff" Glyph="&#xe7ed;" FontSize="{StaticResource FontIconSize}"/>
-                        </Grid>
-                    </ToggleButton>
-
-                    <ToggleButton x:Name="ForceToggleButton" Style="{StaticResource AppToggleButton}" Grid.Column="1" Click="ForceToggleButton_Click">
-                        <ToolTipService.ToolTip>
-                            <ToolTip x:Uid="ForceToolTip"/>
-                        </ToolTipService.ToolTip>
-                        <FontIcon Glyph="&#xe7e8;" FontSize="{StaticResource FontIconSize}"/>
-                    </ToggleButton>
-
-                    <ToggleButton x:Name="KeepOnTopToggleButton" Grid.Column="0" Style="{StaticResource AppToggleButton}" Click="KeepOnTopToggleButton_Click">
-                        <FontIcon Glyph="&#xe718;" FontSize="{StaticResource FontIconSize}"/>
-                    </ToggleButton>
-                </Grid>
+                        <Button
+                            Grid.Column="4" 
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            Click="MoreSettingsButton_Click">
+                            <FontIcon Glyph="&#xe771;" FontSize="{StaticResource FontIconSize}"/>
+                        </Button>
+                    </Grid>
+                </ScrollViewer>
 
                 <Button 
                     x:Name="SettingsButton" 

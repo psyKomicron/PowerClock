@@ -40,6 +40,11 @@ namespace winrt::PowerClock::implementation
     {
         InitializeComponent();
         InitWindow();
+
+        #ifdef _DEBUG
+        appWindow.Title(appWindow.Title() + L" (Preview)");
+        #endif // _DEBUG
+
 ;
         if (unbox_value_or(ApplicationData::Current().LocalSettings().Values().TryLookup(L"TransparencyAllowed"), true))
         {
@@ -103,7 +108,7 @@ namespace winrt::PowerClock::implementation
     {
         ForceToggleButton().IsChecked(unbox_value_or(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ForceShutdown"), true));
         //ExitToggleButton().IsChecked(unbox_value_or<IReference<bool>>(ApplicationData::Current().LocalSettings().Values().TryLookup(L"ExitWhenTimerEnds"), false));
-        NotifsToggleButton().IsChecked(unbox_value_or(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true));
+        //NotifsToggleButton().IsChecked(unbox_value_or(ApplicationData::Current().LocalSettings().Values().TryLookup(L"NotificationsEnabled"), true));
 
 #ifdef USE_PRI_FOR_UI_ITEMS
         ResourceLoader resLoader{};
@@ -143,7 +148,7 @@ namespace winrt::PowerClock::implementation
 
     void MainWindow::NotifsToggleButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
-        ApplicationData::Current().LocalSettings().Values().Insert(L"NotificationsEnabled", NotifsToggleButton().IsChecked());
+        //ApplicationData::Current().LocalSettings().Values().Insert(L"NotificationsEnabled", NotifsToggleButton().IsChecked());
     }
 
     void MainWindow::ExitToggleButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
@@ -158,14 +163,14 @@ namespace winrt::PowerClock::implementation
 
     void MainWindow::NotifsToggleButton_Checked(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
-        RingerOff().Visibility(Visibility::Collapsed);
-        RingerOn().Visibility(Visibility::Visible);
+        //RingerOff().Visibility(Visibility::Collapsed);
+        //RingerOn().Visibility(Visibility::Visible);
     }
 
     void MainWindow::NotifsToggleButton_Unchecked(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
     {
-        RingerOff().Visibility(Visibility::Visible);
-        RingerOn().Visibility(Visibility::Collapsed);
+        //RingerOff().Visibility(Visibility::Visible);
+        //RingerOn().Visibility(Visibility::Collapsed);
     }
 
     void MainWindow::SettingsButton_Click(winrt::Windows::Foundation::IInspectable const&, winrt::Microsoft::UI::Xaml::RoutedEventArgs const&)
@@ -253,10 +258,55 @@ namespace winrt::PowerClock::implementation
         }
     }
 
-    void MainWindow::DarkModeToggleButton_Click(IInspectable const&, RoutedEventArgs const&)
+    void MainWindow::NightModeToggleButton_Click(IInspectable const&, RoutedEventArgs const&)
     {
-        // Go dark mode
-        if (DarkModeToggleButton().IsChecked().GetBoolean())
+        if (NightModeToggleButton().IsChecked())
+        {
+            if (NightModeToggleButton().IsChecked().GetBoolean()) // Go dark mode
+            {
+                IInspectable o = ApplicationData::Current().LocalSettings().Values().TryLookup(L"NightModeFontColor");
+                if (o)
+                {
+                    ApplicationDataCompositeValue composite = o.as<ApplicationDataCompositeValue>();
+                    uint8_t a = composite.Lookup(L"A").as<uint8_t>();
+                    uint8_t r = composite.Lookup(L"R").as<uint8_t>();
+                    uint8_t g = composite.Lookup(L"G").as<uint8_t>();
+                    uint8_t b = composite.Lookup(L"B").as<uint8_t>();
+                    Timer().CountdownForeground(SolidColorBrush(ColorHelper::FromArgb(a, r, g, b)));
+                }
+                else
+                {
+                    Timer().CountdownForeground(Application::Current().Resources().Lookup(box_value(L"NightModeFontBrush")).as<Brush>());
+                }
+
+                SetBackground(winrt::PowerClock::BackdropControllerType::None);
+
+                NightModeToggleButtonContent().Glyph(
+                    Application::Current().Resources().Lookup(box_value(L"LightModeGlyph")).as<hstring>()
+                );
+            }
+            else // Go light (don't be overcucumbred)
+            {
+                Timer().CountdownForeground(Application::Current().Resources().Lookup(box_value(L"ApplicationForegroundThemeBrush")).as<Brush>());
+
+                if (unbox_value_or(ApplicationData::Current().LocalSettings().Values().TryLookup(L"TransparencyAllowed"), true))
+                {
+                    SetBackground(unbox_value_or(
+                        ApplicationData::Current().LocalSettings().Values().TryLookup(L"BackdropType"), ACRYLIC_BACKDROP) == 1 ?
+                        winrt::PowerClock::BackdropControllerType::AcrylicBackdrop : winrt::PowerClock::BackdropControllerType::MicaBackdrop
+                    );
+                }
+                else
+                {
+                    SetBackground(winrt::PowerClock::BackdropControllerType::None);
+                }
+
+                NightModeToggleButtonContent().Glyph(
+                    Application::Current().Resources().Lookup(box_value(L"NightModeGlyph")).as<hstring>()
+                );
+            }
+        }
+        else // Go to dark font but keep acrylic background
         {
             IInspectable o = ApplicationData::Current().LocalSettings().Values().TryLookup(L"NightModeFontColor");
             if (o)
@@ -273,12 +323,6 @@ namespace winrt::PowerClock::implementation
                 Timer().CountdownForeground(Application::Current().Resources().Lookup(box_value(L"NightModeFontBrush")).as<Brush>());
             }
 
-            
-            SetBackground(winrt::PowerClock::BackdropControllerType::None);
-        }
-        else
-        {
-            Timer().CountdownForeground(Application::Current().Resources().Lookup(box_value(L"ApplicationForegroundThemeBrush")).as<Brush>());
             SetBackground(unbox_value_or(
                 ApplicationData::Current().LocalSettings().Values().TryLookup(L"BackdropType"), ACRYLIC_BACKDROP) == 1 ?
                 winrt::PowerClock::BackdropControllerType::AcrylicBackdrop : winrt::PowerClock::BackdropControllerType::MicaBackdrop
@@ -390,7 +434,6 @@ namespace winrt::PowerClock::implementation
                 appWindow.MoveAndResize(RectInt32(x, y, width, height));
             }
 
-            //mapChangedRevoker = settings.Values().MapChanged({ this, &MainWindow::Settings_MapChanged });
             mapChangedEventToken = settings.Values().MapChanged({ this, &MainWindow::Settings_MapChanged });
 #pragma endregion
 
@@ -496,7 +539,11 @@ namespace winrt::PowerClock::implementation
     {
         if (backdropType == winrt::PowerClock::BackdropControllerType::None)
         {
-            backdropController.RemoveAllSystemBackdropTargets();
+            if (backdropController)
+            {
+                backdropController.RemoveAllSystemBackdropTargets();
+            }
+
             // TODO: Set window background
             IInspectable value = ApplicationData::Current().LocalSettings().Values().TryLookup(L"NightModeBackgroundColor");
             if (value)
@@ -553,9 +600,9 @@ namespace winrt::PowerClock::implementation
                 if (backdropType == winrt::PowerClock::BackdropControllerType::AcrylicBackdrop)
                 {
                     auto&& controller = DesktopAcrylicController();
-#pragma warning(suppress : 4244)
+                    #pragma warning(suppress : 4244)
                     controller.TintOpacity(Application::Current().Resources().TryLookup(box_value(L"BackdropSecondaryTintOpacity")).as<double>());
-#pragma warning(suppress : 4244)
+                    #pragma warning(suppress : 4244)
                     controller.LuminosityOpacity(Application::Current().Resources().TryLookup(box_value(L"BackdropSecondaryLuminosityOpacity")).as<double>());
                     controller.FallbackColor(Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
                     controller.TintColor(Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorSecondary")).as<Windows::UI::Color>());
@@ -565,9 +612,9 @@ namespace winrt::PowerClock::implementation
                 else
                 {
                     auto&& controller = MicaController();
-#pragma warning(suppress : 4244)
+                    #pragma warning(suppress : 4244)
                     controller.TintOpacity(Application::Current().Resources().TryLookup(box_value(L"BackdropSecondaryTintOpacity")).as<double>());
-#pragma warning(suppress : 4244)
+                    #pragma warning(suppress : 4244)
                     controller.LuminosityOpacity(Application::Current().Resources().TryLookup(box_value(L"BackdropSecondaryLuminosityOpacity")).as<double>());
                     controller.FallbackColor(Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorBase")).as<Windows::UI::Color>());
                     controller.TintColor(Application::Current().Resources().TryLookup(box_value(L"SolidBackgroundFillColorSecondary")).as<Windows::UI::Color>());

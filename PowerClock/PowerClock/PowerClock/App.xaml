@@ -21,7 +21,7 @@
             <x:Double x:Key="Over400FontSize">70</x:Double>
             <x:Double x:Key="WindowSettingButtonHeight">34</x:Double>
             <x:Double x:Key="ButtonFlyoutContentWidth">50</x:Double>
-            <x:Double x:Key="BackdropTintOpacity">0.2</x:Double>
+            <x:Double x:Key="BackdropTintOpacity">0.4</x:Double>
             <x:Double x:Key="BackdropLuminosityOpacity">0.83</x:Double>
             <x:Double x:Key="BackdropSecondaryTintOpacity">0.3</x:Double>
             <x:Double x:Key="BackdropSecondaryLuminosityOpacity">0.9</x:Double>
@@ -54,6 +54,10 @@
                 TintLuminosityOpacity="0.02"
                 TintColor="{ThemeResource SolidBackgroundFillColorQuarternary}"
                 FallbackColor="{ThemeResource SolidBackgroundFillColorSecondary}"/>
+
+            <x:String x:Key="LightModeGlyph">&#xe793;</x:String>
+            <x:String x:Key="NightModeGlyph">&#xe708;</x:String>
+            <x:String x:Key="HybridModeGlyph">&#xe8d3;</x:String>
 
             <Style x:Key="AppToggleButton" TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
                 <Setter Property="HorizontalAlignment" Value="Stretch"/>
